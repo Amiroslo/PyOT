@@ -95,12 +95,12 @@ def onUse(creature, thing, position, **a):
         creature.replaceItem(position, thing)
     else:
         creature.removeItem(position)
-    
-    if creature.getCondition(CONDITION_REGENERATEHEALTH).ticks * gainhp[1] >= 1500 or creature.getCondition(CONDITION_REGENERATEMANA).ticks * gainmana[1] >= 1500:
+    someCondition = creature.getCondition(CONDITION_REGENERATEHEALTH)
+    if someCondition.length >= 1500 or someCondition.length * gainmana[1] >= 1500:
         creature.message("You are full.", 'MSG_SPEAK_MONSTER_SAY')
     else:
-        creature.condition(Condition(CONDITION_REGENERATEHEALTH, 0, duration / gainhp[1], gainhp[1], gainhp=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
-        creature.condition(Condition(CONDITION_REGENERATEMANA, 0, duration / gainhp[1], gainmana[1], gainmana=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
+        creature.condition(Condition(CONDITION_REGENERATEHEALTH, 0, duration, gainhp[1], gainhp=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
+        creature.condition(Condition(CONDITION_REGENERATEMANA, 0, duration, gainmana[1], gainmana=gainhp[0] * creature.getRegainRate()), CONDITION_ADD, 1500)
         creature.message(sound, 'MSG_SPEAK_MONSTER_SAY')
 
 reg('use', foods.keys(), onUse)

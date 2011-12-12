@@ -1006,17 +1006,25 @@ class Creature(object):
     def condition(self, condition, stackbehavior=enum.CONDITION_LATER, maxLength=0):
         try:
             oldCondition = self.conditions[condition.type]
-            if not oldCondition.ticks:
+            if not oldCondition.length:
                 raise
             
             if stackbehavior == enum.CONDITION_IGNORE:
                 return False
             elif stackbehavior == enum.CONDITION_LATER:
-                return engine.safeCallLater(oldCondition.ticks * oldCondition.per, self.condition, condition, stackbehavior)
+                return engine.safeCallLater(oldCondition.length * oldCondition.every, self.condition, condition, stackbehavior)
             elif stackbehavior == enum.CONDITION_ADD:
-                oldCondition.ticks = min(condition.ticks + oldCondition.ticks, maxLength)
+                if maxLength:
+                    oldCondition.length = min(condition.length + oldCondition.length, maxLength)
+                else:
+                    oldCondition.length += condition.length
+                    
             elif stackbehavior == enum.CONDITION_MODIFY:
-                condition.ticks = min(condition.ticks + oldCondition.ticks, maxLength)
+                if maxLength:
+                    condition.length = min(condition.length + oldCondition.length, maxLength)
+                else:
+                    condition.length += oldCondition.length
+                    
                 self.conditions[condition.type] = condition
             elif stackbehavior == enum.CONDITION_REPLACE:
                 oldCondition.stop()
@@ -1165,9 +1173,9 @@ class Creature(object):
         self.teleport(instanceId)
         
 class Condition(object):
-    def __init__(self, type, subtype="", ticks=1, per=1, *argc, **kwargs):
-        self.ticks = ticks
-        self.per = per
+    def __init__(self, type, subtype="", length=1, every=1, *argc, **kwargs):
+        self.length = length
+        self.every = every
         self.creature = None
         self.tickEvent = None
         if subtype and isinstance(type, str):
@@ -1214,11 +1222,11 @@ class Condition(object):
 
     def effectPoison(self, damage=0, minDamage=0, maxDamage=0):
         self.creature.magicEffect(EFFECT_HITBYPOISON)
-        self.creature.modifyHealth((damage or random.randint(minDamage, maxDamage)) * -1)
+        self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
 
     def effectFire(self, damage=0, minDamage=0, maxDamage=0):
         self.creature.magicEffect(EFFECT_HITBYFIRE)
-        self.creature.modifyHealth((damage or random.randint(minDamage, maxDamage)) * -1)
+        self.creature.modifyHealth(-(damage or random.randint(minDamage, maxDamage)))
 
     def effectRegenerateHealth(self, gainhp=None):
         if not gainhp:
@@ -1238,9 +1246,9 @@ class Condition(object):
                     
     def tick(self):
         self.effect(*self.effectArgs, **self.effectKwargs)
-        self.ticks -= 1
-        if self.ticks > 0:
-            self.tickEvent = engine.safeCallLater(self.per, self.tick)
+        self.length -= self.every
+        if self.length > 0:
+            self.tickEvent = engine.safeCallLater(self.every, self.tick)
         else:
             self.finish()
             
@@ -1248,9 +1256,8 @@ class Condition(object):
         return copy.deepcopy(self)
 
 class Boost(Condition):
-    def __init__(self, type, mod, length, subtype="", ticks=1, *argc, **kwargs):
-        self.ticks = ticks
-        self.per = length
+    def __init__(self, type, mod, length, subtype="", *argc, **kwargs):
+        self.length = length
         self.creature = None
         self.tickEvent = None
         if subtype and isinstance(type, str):
@@ -1270,7 +1277,7 @@ class Boost(Condition):
             self.creature.setSpeed(getattr(self.creature, self.ptype) + self.mod)
         else:
             setattr(self.creature, self.ptype, getattr(self.creature, self.ptype) + self.mod)
-        self.tickEvent = engine.safeCallLater(self.per, self.finish)
+        self.tickEvent = engine.safeCallLater(self.length, self.finish)
     def callback(self):
         # Hack
         if self.ptype == "speed":
