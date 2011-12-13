@@ -412,8 +412,10 @@ def loadTiles(x,y, instanceId):
     return load(int(x / mapInfo.sectorSize[0]), int(y / mapInfo.sectorSize[1]), instanceId)
 
 ### Start New Map Format ###
+
 attributeIds = ('actions', 'count', 'solid','blockprojectile','blockpath','usable','pickable','movable','stackable','ontop','hangable','rotatable','animation', 'doorId', 'depotId', 'text', 'written', 'writtenBy', 'description', 'teledest')
-# Format (Work in Progress):
+
+# Format (Work in Progress)
 """
     <uint8>floor_level
     floorLevel < 60

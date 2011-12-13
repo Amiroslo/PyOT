@@ -129,6 +129,7 @@ def loader(timer):
     __builtin__.spell = game.spell # Simplefy spell making
     __builtin__.callLater = safeCallLater
     __builtin__.Item = game.item.Item
+    __builtin__.itemAttribute = game.item.attribute
     __builtin__.getTile = game.map.getTile
     __builtin__.Condition = game.creature.Condition
     __builtin__.itemAttribute = game.item.attribute
