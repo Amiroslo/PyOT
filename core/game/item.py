@@ -453,10 +453,9 @@ def loadItems():
         if data[1] == "fluidSource":
             loadItems[data[0]]["fluidSource"] = getattr(game.enum, 'FLUID_%s' % data[2].upper())
         elif data[1] == "weaponType":
-            try:
-                loadItems[data[0]]["weaponType"] = getattr(game.enum, 'SKILL_%s' % data[2].upper())
-            except:
-                loadItems[data[0]]["weaponType"] = data[2]
+            loadItems[data[0]]["weaponType"] = data[2]
+            if data[2] not in ("ammunition", "wand"):
+                loadItems[data[0]]["weaponSkillType"] = getattr(game.enum, 'SKILL_%s' % data[2].upper())
         elif data[2]:
             try:
                 loadItems[data[0]][data[1]] = int(data[2])

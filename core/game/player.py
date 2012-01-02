@@ -1803,7 +1803,7 @@ class Player(Creature):
                     dmg = -random.randint(0, round(config.meleeDamage(1, self.getActiveSkill(skillType), self.data["level"], factor)))
                     
                 else:
-                    skillType = self.inventory[5].weaponType
+                    skillType = self.inventory[5].weaponSkillType
                     dmg = -random.randint(0, round(config.meleeDamage(self.inventory[5].attack, self.getActiveSkill(skillType), self.data["level"], factor)))
                     
                     # Critical hit

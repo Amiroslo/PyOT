@@ -597,7 +597,7 @@ class Creature(object):
         
         tile = game.map.getTile(self.position)
         for item in tile.getItems():
-            if item.itemId == game.enum.FULLSPLASH or item.itemId == game.enum.SMALLSPLASH:
+            if item.itemId == game.enum.SMALLSPLASH: #if item.itemId == game.enum.FULLSPLASH or item.itemId == game.enum.SMALLSPLASH:
                 tile.removeItem(item)
                         
         splash = game.item.Item(game.enum.SMALLSPLASH)
