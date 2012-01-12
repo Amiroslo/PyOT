@@ -596,7 +596,7 @@ class MonsterBrain(object):
                 failure.trap(errors.ImpossibleMove)
                 if config.monsterNeverSkipWalks:
                     self.walkRandomStep(monster, badDir)
-            
+                return False
             d = monster.move(step, trap=False)
             d.addErrback(errback)
             

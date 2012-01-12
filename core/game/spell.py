@@ -350,6 +350,9 @@ class Spell(object):
     def requireCallback(self, *args):
         self._requireCallback.extend(args)
 
+    def element(self, type):
+        self.effectOnTarget.append(element(type))
+        
     def use(self, itemId=2260, count=1):
         def check(caster):
             useItem = caster.findItemById(itemId, count)

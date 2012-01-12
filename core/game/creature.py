@@ -216,6 +216,7 @@ class Creature(object):
             if trap:
                 def _trap(res):
                     res.trap(Exception)
+                    return False
                     
                 d.addErrback(_trap)
             return d
@@ -291,7 +292,6 @@ class Creature(object):
                 #self.turn(direction) # Fix me?
                 self.notPossible()
                 raise game.errors.ImpossibleMove()  # Prevent walking on solid tiles
-                return
 
         _time = time.time()
         self.lastStep = _time
