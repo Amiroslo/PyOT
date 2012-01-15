@@ -86,13 +86,14 @@ def defaultBrainFeaturePriority(self, monster):
                     if not key in monster.intervals or monster.intervals[key]+spell[0] < _time:
                         if monster.inRange(monster.target.position, spell[3], spell[3]) and spell[2](monster):
                             if type(spell[1]) == int:
-                                game.spell.targetRunes[spell[1]](None, monster, None, None, monster.target, strength=spell[4])
+                                check = game.spell.targetRunes[spell[1]](None, monster, None, None, monster.target, strength=spell[4])
                                     
                             else:
-                                game.spell.spells[spell[1]][0](monster, spell[4])
+                                check = game.spell.spells[spell[1]][0](monster, spell[4])
                                 
                             monster.intervals[key] = _time
-                            return True # Until next brain tick  
+                            if check:
+                                return True # Until next brain tick  
                             
                 # Melee attacks
                 if monster.base.meleeAttacks and monster.inRange(monster.target.position, 1, 1):
@@ -101,20 +102,20 @@ def defaultBrainFeaturePriority(self, monster):
                         if attack[3] and random.randint(1,100) < attack[4]:
                             monster.target.condition(attack[3], attack[5])
                             
-                        monster.target.onHit(monster, -1 * random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
+                        check = monster.target.onHit(monster, -random.randint(0, round(attack[2] * config.monsterMeleeFactor)), game.enum.PHYSICAL)
                         monster.lastMelee = _time
-                    
-                        return True # If we do have a target, we stop here
+                        if check:
+                            return True # If we do have a target and deals damage, we stop here
 					
                 # Distance attacks
                 elif monster.base.distanceAttacks:
                     distance = random.choice(monster.base.distanceAttacks)
                     if monster.lastDistance + distance[0] <= _time and distance[3](monster):
-                        monster.target.onHit(monster, -1 * random.randint(0, round(distance[1] * config.monsterMeleeFactor)), game.enum.DISTANCE)
-                        monster.shoot(monster.position, monster.target.position, distance[2]) #not sure if this will work.
+                        check = monster.target.onHit(monster, -random.randint(0, round(distance[1] * config.monsterMeleeFactor)), game.enum.DISTANCE)
                         monster.lastDistance = _time
-                    
-                        return True # If we do have a target, we stop here
+                        if check:
+                            monster.shoot(monster.position, monster.target.position, distance[2]) #not sure if this will work.
+                            return True # If we do have a target, we stop here
                             
 
 

@@ -385,7 +385,7 @@ class Spell(object):
                 elif self.targetType == TARGET_TARGET and self.targetArea: #if no target but area still cast the spell (dont need not creature.target)
                     self.targetType = TARGET_AREA #if not and the spell is cast as an area spell do the area being defined.
                 elif not self.targetType == TARGET_TARGETSELF and not self.targetArea:
-                    return
+                    return False
                 elif self.targetType == TARGET_TARGETONLY:
                     return creature.cancelMessage("You need a target to cast this spell.")	
  
@@ -525,7 +525,8 @@ class Rune(Spell):
             if self.targetType == TARGET_TARGET:
                 target = onThing
                 if not target:
-                    return creature.onlyOnCreatures()
+                    creature.onlyOnCreatures()
+                    return False
                     
             if creature.isPlayer():
                 if not target.inRange(creature.position, self.targetRange, self.targetRange):

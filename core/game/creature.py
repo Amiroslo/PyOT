@@ -626,25 +626,25 @@ class Creature(object):
         type = type[0]
         
         self.magicEffect(magicEffect) 
-        
-        tile = game.map.getTile(self.position)
-        for item in tile.getItems():
-            if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
-                tile.removeItem(item)
-                        
-        splash = game.item.Item(game.enum.SMALLSPLASH)
-            
-        if self.isPlayer():
-            splash.fluidSource = game.enum.FLUID_BLOOD
-        else:
-            splash.fluidSource = self.base.blood
-        if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
-            tile.placeItem(splash)
-            
-            # Start decay
-            splash.decay(self.position)
-            
-        updateTile(self.position, tile)
+        if dmg:
+            tile = game.map.getTile(self.position)
+            for item in tile.getItems():
+                if item.itemId in SMALLSPLASHES or item.itemId in FULLSPLASHES:
+                    tile.removeItem(item)
+                            
+            splash = game.item.Item(game.enum.SMALLSPLASH)
+                
+            if self.isPlayer():
+                splash.fluidSource = game.enum.FLUID_BLOOD
+            else:
+                splash.fluidSource = self.base.blood
+            if splash.fluidSource in (game.enum.FLUID_BLOOD, game.enum.FLUID_SLIME):
+                tile.placeItem(splash)
+                
+                # Start decay
+                splash.decay(self.position)
+                
+            updateTile(self.position, tile)
         
         if by and by.isPlayer():
             by.message("%s loses %d hitpoint%s due to your attack." % (self.name().capitalize(), -1 * dmg, 's' if dmg < -1 else ''), 'MSG_DAMAGE_DEALT', value = -1 * dmg, color = textColor, pos=self.position)
@@ -659,15 +659,19 @@ class Creature(object):
             self.follow(by) # If I'm a creature, set my target
         
         # Modify health
-        self.modifyHealth(dmg)
+        if dmg:
+            self.modifyHealth(dmg)
         
-        if by and self.data["health"] < 1:
-            by.target = None
-            by.targetMode = 0
-            if by.isPlayer():
-                by.cancelTarget()
+            if by and self.data["health"] < 1:
+                by.target = None
+                by.targetMode = 0
+                if by.isPlayer():
+                    by.cancelTarget()
         
-        
+            return True
+        else:
+            return False
+            
     def onSpawn(self):
         pass # To be overrided
         
