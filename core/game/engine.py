@@ -930,12 +930,12 @@ def loadPlayer(playerName):
         # Quick load :p
         returnValue(game.player.allPlayers[playerName])
     except:
-        character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE name = %s", (playerName))
+        character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot`, `conditions` FROM `players` WHERE name = %s", (playerName))
         if not character:
             returnValue(None)
             return
         cd = character[0]
-        cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29]}
+        cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29] "conditions": cd[30]}
         game.player.allPlayers[playerName] = game.player.Player(None, cd)
         returnValue(game.player.allPlayers[playerName])
         

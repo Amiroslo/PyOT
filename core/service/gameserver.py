@@ -127,7 +127,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                 if not account or account == True:
                     self.exitWithError("Invalid username or password")
 
-            character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot` FROM `players` WHERE account_id = %s AND `name` = %s", (account[0][0], characterName))
+            character = yield sql.conn.runQuery("SELECT `id`,`name`,`world_id`,`group_id`,`account_id`,`vocation`,`health`,`mana`,`soul`,`manaspent`,`experience`,`posx`,`posy`,`posz`,`direction`,`sex`,`looktype`,`lookhead`,`lookbody`,`looklegs`,`lookfeet`,`lookaddons`,`lookmount`,`town_id`,`skull`,`stamina`, `storage`, `skills`, `inventory`, `depot`, `conditions` FROM `players` WHERE account_id = %s AND `name` = %s", (account[0][0], characterName))
 
             if not character:
                 character = game.scriptsystem.get("loginCharacterFailed").runSync(None, client=self, account=account, name=characterName)
@@ -163,7 +163,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             except:
                 # Bulld the dict since we disabled automaticly doing this. Here we cast Decimal objects to int aswell (no longer automaticly either)
                 cd = character[0]
-                cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29]}
+                cd = {"id": cd[0], "name": cd[1], "world_id": cd[2], "group_id": cd[3], "account_id": cd[4], "vocation": cd[5], "health": int(cd[6]), "mana": int(cd[7]), "soul": int(cd[8]), "manaspent": int(cd[9]), "experience": int(cd[10]), "posx": cd[11], "posy": cd[12], "posz": cd[13], "direction": cd[14], "sex": cd[15], "looktype": cd[16], "lookhead": cd[17], "lookbody": cd[18], "looklegs": cd[19], "lookfeet": cd[20], "lookaddons": cd[21], "lookmount": cd[22], "town_id": cd[23], "skull": cd[24], "stamina": cd[25], "storage": cd[26], "skills": cd[27], "inventory": cd[28], "depot": cd[29], "conditions": cd[30]}
 
                 game.player.allPlayers[cd['name']] = game.player.Player(self, cd)
                 self.player = game.player.allPlayers[cd['name']]
