@@ -200,7 +200,7 @@ class Monster(Creature):
 
         if self.lastDamager and self.lastDamager.isPlayer() and self.lastDamager != self.master:
             if lootMsg:
-                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ','.join(lootMsg)), 'MSG_LOOT')
+                self.lastDamager.message("Loot of %s: %s." % (self.data["name"], ', '.join(lootMsg)), 'MSG_LOOT')
             else:
                 self.lastDamager.message("Loot of %s: Nothing." % (self.data["name"]), 'MSG_LOOT')
                 
