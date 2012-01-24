@@ -73,7 +73,7 @@ def loader(timer):
     def sync(d, timer):
         # Load scripts
         game.scriptsystem.importer()
-        game.scriptsystem.get("startup").run()
+        game.scriptsystem.get("startup").runSync()
 
         # Load map (if configurated to do so)
         if config.loadEntierMap:
@@ -86,13 +86,13 @@ def loader(timer):
             
         # Charge rent?
         def _charge(house):
-            callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").run(None, house=house))
+            callLater(config.chargeRentEvery, looper, lambda: game.scriptsystem.get("chargeRent").runSync(None, house=house))
             
         for house in game.house.houseData.values():
             if not house.rent or not house.owner: continue
             
             if house.paid < (timer - config.chargeRentEvery):
-                game.scriptsystem.get("chargeRent").run(None, house=house)
+                game.scriptsystem.get("chargeRent").runSync(None, house=house)
                 _charge(house)
             else:
                 callLater((timer - house.paid) % config.chargeRentEvery, _charge, house)

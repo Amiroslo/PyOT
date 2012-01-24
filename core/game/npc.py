@@ -67,7 +67,7 @@ class NPC(Creature):
         self.respawn = state
         
     def playerSay(self, player, said, type, channel):
-        game.scriptsystem.get('playerSayTo').run(self, player, None, said=said, channelType=type, channelId=channel)
+        game.scriptsystem.get('playerSayTo').runSync(self, player, None, said=said, channelType=type, channelId=channel)
 
     def sayTo(self, to, text, messageType=game.enum.MSG_NPC_FROM):
         self.sayPrivate(text, to, messageType)
@@ -525,7 +525,8 @@ def chance(procent):
     return gen
 
 class NPCBrain(MonsterBrain):
-    @game.engine.loopInThread(2)
+    #@game.engine.loopInThread(2)
+    game.engine.loopDecorator(2)
     def handleThink(self, npc, check=True):
         npc.noBrain = False
         # Are we alive?

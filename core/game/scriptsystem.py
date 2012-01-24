@@ -37,7 +37,8 @@ class Scripts(object):
             self.scripts.remove(callback)
                 
     def run(self, creature, end=None, **kwargs):
-        scriptPool.callInThread(self._run, creature, end, **kwargs)
+        #scriptPool.callInThread(self._run, creature, end, **kwargs)
+        raise Exception("Threaded script is not allowed in this branch!")
 
     def runSync(self, creature, end=None, **kwargs):
         return self._run(creature, end, **kwargs)
@@ -60,7 +61,8 @@ class Scripts(object):
 
 class NCScripts(Scripts):
     def run(self, end=None, **kwargs):
-        scriptPool.callInThread(self._run, end, **kwargs)
+        #scriptPool.callInThread(self._run, end, **kwargs)
+        raise Exception("Threaded script is not allowed in this branch!")
 
     def runSync(self, end=None, **kwargs):
         return self._run(end, **kwargs)
@@ -114,7 +116,8 @@ class TriggerScripts(object):
             del self.scripts[trigger]
         
     def run(self, trigger, creature, end=None, **kwargs):
-        scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
+        #scriptPool.callInThread(self._run, trigger, creature, end, **kwargs)
+        raise Exception("Threaded script is not allowed in this branch!")
 
     def runSync(self, trigger, creature, end=None, **kwargs):
         return self._run(trigger, creature, end, **kwargs)
@@ -250,7 +253,8 @@ class ThingScripts(object):
         return thing_cleanup_callback
         
     def run(self, thing, creature, end=None, **kwargs):
-        scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
+        #scriptPool.callInThread(self._run, thing, creature, end, False, **kwargs)
+        raise Exception("Threaded script is not allowed in this branch!")
     
     def runDefer(self, thing, creature, end=None, **kwargs):
         return defer.maybeDeferred(self._run, thing, creature, end, True, **kwargs)
@@ -408,8 +412,8 @@ def callEventDate(date, func):
     globalEvents.append(reactor.callLater(parse(date) - now(), callEventDate, date, func))
     
 # Begin the scriptPool stuff, note: we got to add support for yield for the SQL stuff!
-scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
-scriptPool.start()
+"""scriptPool = ThreadPool(5, config.suggestedGameServerScriptPoolSize)
+scriptPool.start()"""
 
 def run():
     game.engine.IS_ONLINE = False
@@ -417,7 +421,7 @@ def run():
     get('shutdown').runSync()
     
 reactor.addSystemEventTrigger('before','shutdown',run)
-reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
+#reactor.addSystemEventTrigger('before','shutdown',scriptPool.stop)
 
 def handleModule(name):
     try:

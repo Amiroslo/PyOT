@@ -189,7 +189,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
             self.ready = True # We can now accept other packages
 
             # Call the login script
-            game.scriptsystem.get("login").run(self.player)
+            game.scriptsystem.get("login").runSync(self.player)
             
             # If we got a waiting list, now is a good time to vertify the list
             if lastChecks:
@@ -243,7 +243,7 @@ class GameProtocol(protocolbase.TibiaProtocol):
                     stream.vipLogout(self.player.data["id"])
                     stream.send(x.client)
             
-            game.scriptsystem.get("logout").run(self.player)
+            game.scriptsystem.get("logout").runSync(self.player)
             self.player.despawn()
             
     def packet(self, *args):

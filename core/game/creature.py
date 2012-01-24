@@ -276,7 +276,7 @@ class Creature(object):
             raise Exception("(old)Tile not found (%s). This shouldn't happend!" % oldPosition)
         
         
-        val = yield game.scriptsystem.get("move").run(self)
+        val = yield game.scriptsystem.get("move").runDefer(self)
         if val == False:
             return
             
@@ -306,7 +306,7 @@ class Creature(object):
             
         # Deal with walkOff
         for item in oldTile.getItems():
-            game.scriptsystem.get('walkOff').run(item, self, None, position=oldPosition)
+            game.scriptsystem.get('walkOff').runSync(item, self, None, position=oldPosition)
 
         # Deal with preWalkOn
         for item in newTile.getItems():
@@ -406,7 +406,7 @@ class Creature(object):
             
         # Deal with walkOn
         for item in newTile.getItems(): # Scripts
-            game.scriptsystem.get('walkOn').run(item, self, None, position=position, fromPosition=oldPosition)
+            game.scriptsystem.get('walkOn').runSync(item, self, None, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
                     self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2], self.position.instanceId))
@@ -425,12 +425,12 @@ class Creature(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').run(creature2, self)
-            game.scriptsystem.get('disappear').run(self, creature2)
+            game.scriptsystem.get('disappear').runSync(creature2, self)
+            game.scriptsystem.get('disappear').runSync(self, creature2)
             
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').run(creature2, self)
-            game.scriptsystem.get('appear').run(self, creature2)
+            game.scriptsystem.get('appear').runSync(creature2, self)
+            game.scriptsystem.get('appear').runSync(self, creature2)
             
     def magicEffect(self, type, pos=None):
         if not type: return
@@ -761,10 +761,10 @@ class Creature(object):
         disappearFrom = oldPosCreatures - newPosCreatures
         appearTo = newPosCreatures - oldPosCreatures
         for creature2 in disappearFrom:
-            game.scriptsystem.get('disappear').run(creature2, self)
+            game.scriptsystem.get('disappear').runSync(creature2, self)
 
         for creature2 in appearTo:
-            game.scriptsystem.get('appear').run(creature2, self)    
+            game.scriptsystem.get('appear').runSync(creature2, self)    
          
         
         for spectator in getSpectators(position, ignore=(self,)):

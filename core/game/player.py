@@ -74,7 +74,7 @@ class Player(Creature):
             for x in xrange(0, len(self.inventory)):
                 item = self.inventory[x]
                 if item:
-                    game.scriptsystem.get("equip").run(self, item, slot = x+1)
+                    game.scriptsystem.get("equip").runSync(self, item, slot = x+1)
                 
         else:
             self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), None]
@@ -1541,7 +1541,7 @@ class Player(Creature):
         if not self.data["health"]:
             self.data["health"] = self.data["healthmax"]
             self.data["mana"] = self.data["manamax"]
-            game.scriptsystem.get("respawn").run(self)
+            game.scriptsystem.get("respawn").runSync(self)
             import data.map.info
             self.teleport(data.map.info.towns[self.data['town_id']][1])
 
@@ -1855,10 +1855,10 @@ class Player(Creature):
                 creature.playerSay(self, text, channelType, channelId or reciever)
 
         def part1():
-            game.scriptsystem.get("talkaction").run(text, self, endCallback, text=' '.join(splits[0:]))
+            game.scriptsystem.get("talkaction").runSync(text, self, endCallback, text=' '.join(splits[0:]))
             
         if len(splits) > 1:
-            game.scriptsystem.get("talkactionFirstWord").run(splits[0], self, part1, text=' '.join(splits[1:]))
+            game.scriptsystem.get("talkactionFirstWord").runSync(splits[0], self, part1, text=' '.join(splits[1:]))
         else:
             part1()   
             
@@ -1971,7 +1971,7 @@ class Player(Creature):
             
         if cid in allCreatures:
             target = allCreatures[cid]
-            ret = game.scriptsystem.get('target').run(self, target, attack=True)
+            ret = game.scriptsystem.get('target').runSync(self, target, attack=True)
             if ret == False:
                 return
             elif ret != None:

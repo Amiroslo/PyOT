@@ -523,8 +523,8 @@ class MonsterBrain(object):
         monster.noBrain = False
         self.handleThink(monster)
                 
-    @engine.loopInThread(2)
-    #@engine.loopDecorator(2)
+    #@engine.loopInThread(2)
+    @engine.loopDecorator(2)
     def handleThink(self, monster, check=True):
         # Are we alive?
         if not monster.alive:
