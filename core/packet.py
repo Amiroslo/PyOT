@@ -88,65 +88,65 @@ class TibiaPacketReader(object):
         return game.map.StackPosition(self.uint16(), self.uint16(), self.uint8(), self.uint8(), instance)
         
 class TibiaPacket(object):
-    __slots__ = ('bytes')
+    __slots__ = ('data')
     def __init__(self, header=None):
-        self.bytes = ""
+        self.data = ""
         if header:
             self.uint8(header)
 
     def clear(self):
-        self.bytes = ""
+        self.data = ""
         
     # 8bit - 1byte, C type: char
     def uint8(self, data):
-        self.bytes += chr(data)
+        self.data += chr(data)
     def int8(self, data):
-        self.bytes += struct.pack("<b", data)
+        self.data += struct.pack("<b", data)
 
     # 16bit - 2bytes, C type: short
     def uint16(self, data):
-        self.bytes += struct.pack("<H", data)
+        self.data += struct.pack("<H", data)
     def int16(self, data):
-        self.bytes += struct.pack("<h", data)
+        self.data += struct.pack("<h", data)
 
     # 32bit - 4bytes, C type: int
     def uint32(self, data):
-        self.bytes += struct.pack("<I", data)
+        self.data += struct.pack("<I", data)
     def int32(self, data):
-        self.bytes += struct.pack("<i", data)
+        self.data += struct.pack("<i", data)
 
     # 64bit - 8bytes, C type: long long
     def uint64(self, data):
-        self.bytes += struct.pack("<Q", data)
+        self.data += struct.pack("<Q", data)
     def int64(self, data):
-        self.bytes += struct.pack("<q", data)
+        self.data += struct.pack("<q", data)
 
     # 32bit - 4bytes, C type: float
     def float(self, data):
-        self.bytes += struct.pack("<f", data)
+        self.data += struct.pack("<f", data)
 
     # 64bit - 8bytes, C type: double
     def double(self, data):
-        self.bytes += struct.pack("<d", data)
+        self.data += struct.pack("<d", data)
 
         
     def string(self, string):
         length = len(string)
-        self.bytes += struct.pack("<H%ds" % length, length, str(string))
+        self.data += struct.pack("<H%ds" % length, length, str(string))
 
     def put(self, string):
-        self.bytes += str(string)
+        self.data += str(string)
         
     def raw(self, data):
-        self.bytes += data
+        self.data += data
 
     #@inThread
     def send(self, stream):
-        if not stream or not self.bytes:
+        if not stream or not self.data:
             return
 
-        data = struct.pack("<H", len(self.bytes))+self.bytes
-        
+        data = struct.pack("<H", len(self.data))+self.data
+
         if stream.xtea:
             data = otcrypto.encryptXTEA(data, stream.xtea)
 
@@ -154,10 +154,10 @@ class TibiaPacket(object):
             
     #@inThread
     def sendto(self, list):
-        if not list or not self.bytes:
+        if not list or not self.data:
             return # Noone to send to
         
-        data = struct.pack("<H", len(self.bytes))+self.bytes
+        data = struct.pack("<H", len(self.data))+self.data
         for client in list:
             if not client:
                 continue

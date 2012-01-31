@@ -155,7 +155,7 @@ class Item(object):
         except:
             try:
                 return _loadItem["a"] & (1 << self.attributes.index(name))
-            except ValueError:
+            except:
                 try:
                     return _loadItem[name]
                 except KeyError:
@@ -310,6 +310,11 @@ class Item(object):
 
             try:
                 del params["inTrade"]
+            except:
+                pass
+            
+            try:
+                del params["executeDecay"]
             except:
                 pass
             

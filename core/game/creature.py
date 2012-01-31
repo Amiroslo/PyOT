@@ -233,6 +233,7 @@ class Creature(object):
             
         if not self.data["health"] or not self.canMove:
             return
+
             
         import data.map.info
         
@@ -385,13 +386,15 @@ class Creature(object):
             ignore = ()
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)   
-        
-        for spectator in (oldPosCreatures|newPosCreatures):
+        spectators = oldPosCreatures|newPosCreatures
+        for spectator in (spectators):
             
             # Make packet
             if not spectator.client:
                 continue
-
+            if spectator == self:
+                continue # Shouldn't happend
+                
             canSeeNew = spectator in newPosCreatures
             canSeeOld = spectator in oldPosCreatures
             isKnown = self in spectator.knownCreatures
@@ -399,15 +402,18 @@ class Creature(object):
             
             if not canSeeOld and canSeeNew:
                 # Too high stack?
-                stream.addTileCreature(position, newStackPos, self, spectator) # This automaticly deals with known list so
+                
+                stream.addTileCreature(position, newStackPos, self, spectator, isKnown) # This automaticly deals with known list so
                     
             elif canSeeOld and not canSeeNew:
-                if isKnown:
-                    stream.removeTileItem(oldPosition, oldStackpos)
-                    spectator.knownCreatures.remove(self)
+                stream.removeTileItem(oldPosition, oldStackpos)
+                spectator.knownCreatures.remove(self)
+                self.knownBy.remove(spectator)
             
             else:
                 if (oldPosition.z != 7 or position.z < 8) and oldStackpos < 10: # Only as long as it's not 7->8 or 8->7
+                    if not isKnown:
+                        stream.addTileCreature(oldPosition, oldStackpos, self, spectator)
                     stream.uint8(0x6D)
                     stream.position(oldPosition)
                     stream.uint8(oldStackpos)
@@ -416,6 +422,7 @@ class Creature(object):
                 else:
                     stream.removeTileItem(oldPosition, oldStackpos)
                     spectator.knownCreatures.remove(self)
+                    self.knownBy.remove(spectator)
                     stream.addTileCreature(position, newStackPos, self, spectator)
                     
             stream.send(spectator.client) 
@@ -435,7 +442,6 @@ class Creature(object):
                 except:
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest
-
             
         # Deal with appear and disappear. Ahh the power of sets :)
         disappearFrom = oldPosCreatures - newPosCreatures
@@ -909,7 +915,7 @@ class Creature(object):
     def cancelWalk(self, d=None):
         return # Is only executed on players
         
-    def canSee(self, position, radius=(8,6)):
+    def canSee(self, position, radius=(7,5)):
         # We are on ground level and we can't see underground
         # We're on a diffrent instanceLevel
         # Or We are undergorund and we may only see 2 floors
@@ -918,20 +924,17 @@ class Creature(object):
         
         offsetz = self.position.z-position.z
 
-        if position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz):
-            return True
-        return False
+        return position.x >= (self.position.x - radius[0] + offsetz) and position.x <= (self.position.x + radius[0] + offsetz) and position.y >= (self.position.y - radius[1] + offsetz) and position.y <= (self.position.y + radius[1] + offsetz)
 
-    def canTarget(self, position, radius=(8,6), allowGroundChange=False):
+        
+    def canTarget(self, position, radius=(7,5), allowGroundChange=False):
         if self.position.instanceId != position.instanceId:
             return False
             
         if not allowGroundChange and self.position.z != position.z: # We are on ground level and we can't see underground
             return False
         
-        if (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]+1) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1]+1):
-            return True
-        return False
+        return (position.x >= self.position.x - radius[0]) and (position.x <= self.position.x + radius[0]) and (position.y >= self.position.y - radius[1]) and (position.y <= self.position.y + radius[1])
         
     def distanceStepsTo(self, position):
         return abs(self.position.x-position.x)+abs(self.position.y-position.y)

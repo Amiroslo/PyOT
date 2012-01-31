@@ -32,6 +32,7 @@ def decryptXTEA(stream, k):
     return buffer
 
 def encryptXTEA(stream, k):
+    
     buffer = ""
     pos = 0
 

@@ -394,7 +394,7 @@ def calculateWalkPattern(fromPos, to, skipFields=None, diagonal=True):
     return pattern
 
 # Spectator list
-def getSpectators(pos, radius=(8,6), ignore=()):
+def getSpectators(pos, radius=(7,5), ignore=()):
     """Gives you the spectators (:class:`service.gameserver.GameProtocol`) in the area.
     
     :param pos: Position of the center point.
@@ -417,13 +417,13 @@ def getSpectators(pos, radius=(8,6), ignore=()):
         
 getSpectators = bindconstant._make_constants(getSpectators)
 
-def hasSpectators(pos, radius=(8,6), ignore=()):
+def hasSpectators(pos, radius=(7,5), ignore=()):
     for player in game.player.allPlayers.values():
         if player.canSee(pos, radius) and player not in ignore: return True
         
     return False
     
-def getCreatures(pos, radius=(8,6), ignore=()):
+def getCreatures(pos, radius=(7,5), ignore=()):
     """Gives you the creatures in the area.
     
     :param pos: Position of the center point.
@@ -446,7 +446,7 @@ def getCreatures(pos, radius=(8,6), ignore=()):
         
 getCreatures = bindconstant._make_constants(getCreatures)
 
-def getPlayers(pos, radius=(8,6), ignore=()):
+def getPlayers(pos, radius=(7,5), ignore=()):
     """Gives you the players in the area.
     
     :param pos: Position of the center point.
@@ -666,10 +666,10 @@ def explainPacket(packet):
     
     """
     
-    currPos = packet.pos
-    packet.pos = 0
-    log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(packet.uint8()), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.getData())))) ))
-    packet.pos = currPos
+    #currPos = packet.pos
+    #packet.pos = 0
+    log.msg("Explaining packet (type = {0}, length: {1}, content = {2})".format(hex(ord(packet.data[0])), len(packet.data), ' '.join( map(str, map(hex, map(ord, packet.data)))) ))
+    #packet.pos = currPos
 
 # Save system, async :)
 def saveAll(force=False):

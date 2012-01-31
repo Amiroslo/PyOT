@@ -23,6 +23,7 @@ class BasePacket(TibiaPacket):
     maxOutfits = 29
     maxMounts = 25
     protocolEnums = {}
+    _ok_ = []
     """protocolEnums["MSG_NONE"] = 0
     protocolEnums["MSG_SPEAK_SAY"] = 0x01
     protocolEnums["MSG_SPEAK_WHISPER"] = 0x02
@@ -998,7 +999,8 @@ class BaseProtocol(object):
     def handleLookAt(self, player, packet):
         from game.item import sid, cid, items
         position = packet.position(player.position.instanceId)
-
+        print player.canSee(Position(position.x+1, position.y, position.z)), player.canSee(Position(position.x, position.y+1, position.z))
+        print player.canSee(Position(position.x-1, position.y, position.z)), player.canSee(Position(position.x, position.y-1, position.z))
         clientId = packet.uint16()
         stackpos = packet.uint8()
         

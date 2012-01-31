@@ -270,17 +270,17 @@ class Tile(object):
             
     def placeCreature(self, creature):
         pos = self._depack(PACK_ITEMS) + self._depack(PACK_CREATURES)
-
         self.things.insert(pos, creature)
         self._modpack(PACK_CREATURES, 1)
         if pos > 9:
             print self.things
+            print pos, self.countNflags
             raise Exception("Item position > 9! Likely we need to deal with this ")
         return pos
         
     def removeCreature(self,creature):
+        self.things.remove(creature)
         self._modpack(PACK_CREATURES, -1)
-        return self.things.remove(creature)
         
     def placeItem(self, item):
         if item.ontop:
@@ -291,6 +291,7 @@ class Tile(object):
         self.things.insert(pos, item)
         if pos > 9:
             print self.things
+            print pos, self.countNflags
             raise Exception("Item position > 9! Likely we need to deal with this ")
         return pos
     
@@ -322,35 +323,15 @@ class Tile(object):
         
     def removeItem(self, item):
         item.stopDecay()
-        
+        self.things.remove(item)
         if item.ontop:
             self._modpack(PACK_ITEMS, -1)
-        return self.things.remove(item)
 
     def removeItemWithId(self, itemId):
         for i in self.getItems():
             if i.itemId == itemId:
                 self.removeItem(i)
                 
-    # Fase those calls out
-    def removeClientItem(self, cid, stackpos=None):
-        if stackpos and self.things[stackpos].cid == cid:
-            return self.things.pop(stackpos)
-        else:
-            for x in self.bottomItems():
-                if x.cid == cid:
-                    self.things.remove(x)
-                    break
-    """
-    def removeClientCreature(self, stackpos=None):
-        if stackpos and self.things[stackpos]:
-            self.creatureCount -= 1 << 4
-            return self.things.pop(stackpos)  
-            
-    def placeClientItem(self, cid):
-        import game.item
-        item = game.item.Item(game.item.sid(cid))
-        return self.placeItem(item)"""
         
     def getThing(self, stackpos):
         try:
