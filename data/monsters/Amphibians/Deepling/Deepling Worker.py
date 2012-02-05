@@ -9,3 +9,4 @@ Deepling_Worker.walkAround(energy=0, fire=0, poison=0) ##
 Deepling_Worker.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Deepling_Worker.voices("Qjell afar gou jey!")
 Deepling_Worker.regMelee(80) ##
+##shots spears too

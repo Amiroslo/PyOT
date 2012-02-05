@@ -10,3 +10,4 @@ Deepling_Guard.setImmunity(paralyze=1, invisible=1, lifedrain=1, drunk=1)
 Deepling_Guard.voices("QJELL NETA NA!!")
 Deepling_Guard.regMelee(400)
 Deepling_Guard.regDistance(350, ANIMATION_SPEAR, game.monster.chance(21))
+Deepling_Guard.regSelfSpell("Light Healing", 100, 200, check=game.monster.chance(20)) #strength?

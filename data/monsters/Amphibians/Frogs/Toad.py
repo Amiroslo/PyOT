@@ -12,10 +12,6 @@ Toad.setDefense(7, fire=1.1, earth=0.8, energy=1.0, ice=0.8, holy=1.0, death=1.0
 Toad.loot( (2148, 100, 20), ("poisonous slime", 4.25), ("fish", 20.0), ("war hammer", 0.25), ("mace", 3.0) )
 
 
-envenom = spell.Spell("tenvenom", target=TARGET_TARGET)
-envenom.element(EARTH)
-envenom.effects(area=EFFECT_POISONAREA)
-
 Toad.regMelee(30, condition=Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
-Toad.regSelfSpell("Haste", 360, 360, length=5, check=game.monster.chance(21))
-Toad.regTargetSpell("tenvenom", 8, 17, range=1, check=game.monster.chance(21))
+Toad.regSelfSpell("Haste", 360, 360, length=5, check=game.monster.chance(21)) #?
+Toad.regTargetSpell(2292, 8, 17, check=game.monster.chance(21)) #is the range 1?

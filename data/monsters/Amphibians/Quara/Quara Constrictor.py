@@ -13,7 +13,7 @@ quara_constrictor.loot( (2148, 100, 100), ("fish fin", 0.5, 3), ("brass armor", 
 poison_berserk = spell.Spell("qcpoison berserk")
 poison_berserk.area(AREA_SQUARE)
 poison_berserk.element(ICE)
-poison_berserk.targetCondition(CONDITION_FREEZING, 0, 4, damage=8)
+poison_berserk.targetCondition(CONDITION_FREEZING, 10, 8, damage=8) #every 4 turns = 8seconds 1turn = 2s
 poison_berserk.effects(area=EFFECT_POISONAREA)
 
 lifedrain_berserk = spell.Spell("qclifedrain berserk")
@@ -21,12 +21,16 @@ lifedrain_berserk.area(AREA_SQUARE)
 lifedrain_berserk.element(LIFEDRAIN)
 lifedrain_berserk.effects(area=EFFECT_MAGIC_RED)
 
+cre = spell.Spell("close electrify")
+cre.targetCondition(CONDITION_ENERGY, 3, 4, damage=25) #every 2 turns
+
 iceball = spell.Spell("qciceball")
 iceball.area(AREA_CIRCLE3)
 iceball.element(ICE)
 iceball.effects(area=EFFECT_GIANTICE) # http://imageshack.us/photo/my-images/88/naamloosqk.png/
 
-quara_constrictor.regMelee(150, condition=Condition(CONDITION_POISON, 0, 1, damage=1), conditionChance=100)
-quara_constrictor.regTargetSpell("qclifedrain berserker", 0, 80, check=game.monster.chance(25))
+quara_constrictor.regMelee(150, condition=Condition(CONDITION_POISON, 15, 1, damage=1), conditionChance=100) #
+quara_constrictor.regTargetSpell("qclifedrain berserker", 1, 80, check=game.monster.chance(25))
 quara_constrictor.regTargetSpell("qciceball", 40, 70, check=game.monster.chance(25)) 
-quara_constrictor.regTargetSpell("qcpoison berserk", 0, 80, check=game.monster.chance(25)) 
+quara_constrictor.regTargetSpell("qcpoison berserk", 1, 80, check=game.monster.chance(25))
+quara_constrictor.regTargetSpell("close electrify", 1, 1, check=game.monster.chance(10)) #not suppose to damage
