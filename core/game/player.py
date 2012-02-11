@@ -1681,23 +1681,23 @@ class Player(Creature):
         condition = ""
         
         if self.saveDepot or force:
-            depot = ", `depot` = '%s'" % self.pickleDepot().replace("'", "\\'")
+            depot = ", `depot` = '%s'" % self.pickleDepot().replace("'", "\\'").replace("%", "%%")
             self.saveDepot = False
             
         if self.saveStorage or force:
-            storage = ", `storage` = '%s'" % otjson.dumps(self.storage).replace("'", "\\'")
+            storage = ", `storage` = '%s'" % otjson.dumps(self.storage).replace("'", "\\'").replace("%", "%%")
             self.saveStorage = False
             
         if self.saveSkills or force:
-            skills = ", `skills` = '%s'" % otjson.dumps(self.skills).replace("'", "\\'")
+            skills = ", `skills` = '%s'" % otjson.dumps(self.skills).replace("'", "\\'").replace("%", "%%")
             self.saveSkills = False
             
         if self.saveInventory or force:
-            inventory = ", `inventory` = '%s'" % self.pickleInventory().replace("'", "\\'")
+            inventory = ", `inventory` = '%s'" % self.pickleInventory().replace("'", "\\'").replace("%", "%%")
             self.saveInventory = False
         
         if self.saveCondition or force:
-            condition = ", `conditions` = '%s'" % game.engine.fastPickler(self.conditions).replace("'", "\\'")
+            condition = ", `conditions` = '%s'" % game.engine.fastPickler(self.conditions)
             self.saveCondition = False
             
         extra = "%s%s%s%s%s" % (depot, storage, skills, inventory, condition)
