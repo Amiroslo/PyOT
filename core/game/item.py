@@ -186,16 +186,17 @@ class Item(object):
                 return items[self.itemId]["name"]
     
     def description(self, player=None, position=None):
+        bonus = ['speed', 'magiclevelpoints', 'absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain', 'absorbPercentAll'] #charges, showcharges, showattributes
         elems = ['elementPhysical', 'elementFire', 'elementIce', 'elementEarth', 'elementDeath', 'elementEnergy', 'elementHoly', 'elementDrown']
         description = "You see %s" % self.name()
         if self.showDuration:
             description += "that will expire in %d seconds" % self.duration # TODO: days, minutes, hours
         if self.containerSize:
             description += " (Vol:%d)" % self.containerSize
-        if self.armor: #magiclevelpoints absorbPercentDeath etc...
-            description += " (Arm:%d)" % self.armor
-        if self.attack or self.defence: ##melee? weapons and shields
+        if self.armor or self.speed or self.attack or self.defence: #armors, amulets, rings, melee? weapons, and shields ##self.speed makes its include for tiles it shouldnt. ##I dont think arrows or bolt should work either.
             description += " ("
+            if self.armor:
+                description += "Arm:%d" % self.armor
             if self.attack:
                 description += "Atk:%d" % self.attack
             moreatk = ""
@@ -203,42 +204,59 @@ class Item(object):
                 value = self.__getattr__(elem)
                 if value:
                     pre = elem[len("element"):]
-                    moreatk += " +%d %s" % (value, pre.lower())
+                    moreatk += " %+d %s" % (value, pre.lower())
             if moreatk:
                 description += " physical %s" % moreatk
             if self.extraatk:
-                description += " +%d" % self.extraatk
+                description += " %+d" % self.extraatk
             if self.defence:
                 if self.attack:
                     description += ", "
                 description += "Def:%d" % self.defence
             if self.extradef:
-                description += " +%d" % self.extradef
+                description += " %+d" % self.extradef
+            morearm = ""
+            for bns in bonus: ##TODO: sort from highest to lowest excluding speed and magic level
+                if self.__getattr__(bns):
+				    if bns == 'absorbPercentAll': #TODO: should say the +% in front of each one.
+				        pre = ', Physical, Death, Fire, Ice, Earth, Energy, Holy, Drown, Poison, ManaDrain, Lifedrain'
+				    elif bns == 'speed':
+				        pre = 'speed'
+				    elif bns == 'magiclevelpoints':
+				        pre = 'magic level'
+				    else:
+				        pre = bns[len("absorbPercent"):]
+				    if bns == 'speed' or bns == 'magiclevelpoints':
+				        morearm += ", %+d %s" % (self.__getattr__(bns), pre.lower())
+				    else:
+				        morearm += ", %+d%%%s" % (self.__getattr__(bns), pre.lower())
+            if morearm:
+                if not self.armor and not self.defence:
+				    morearm = morearm[2:]
+                description += "%s" % morearm
             description += ")" #shows up as a ? for some reason
 
-        descriptio += "."
+        description += "."
 
-        ###########################only show weight and special description if distance <2. TODO: use extra below here
         extra = ""
-        if player and (not position or player.inRange(position, 2, 2)): # If position ain't set/known, we're usually in a trade situation and we should show it.
+        if player and (not position or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.weight:
                 if self.count:
-                    description	+= "It weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
+                    extra += "\nIt weighs %.2f oz." % (float(self.count) * float(self.weight) / 100)
                 else:
-                    description	+= "It weighs %.2f oz." % (float(self.weight) / 100)
+                    extra += "\nIt weighs %.2f oz." % (float(self.weight) / 100)
 
             # Special description, not always defined
             if self.params:
                 if "description" in self.params:
-                    extra = self.params["description"]
+                    extra = "\n%s" % self.params["description"]
                 elif "description" in items[self.itemId]:
-                    extra = items[self.itemId]["description"]
+                    extra = "\n%s" % items[self.itemId]["description"]
 
-        ########################
-        if self.text and (player and (not position or player.inRange(position, 4, 4))):
-            extra += self.text
+        if self.text and (player and (not position or player.inRange(position, 3, 3))):
+            extra += "\nYou Read: %s" % self.text
             
-        return "%s\n%s" % (description, extra)
+        return "%s%s" % (description, extra)
 
     def rawName(self):
         if self.count > 1 and "plural" in items[self.itemId]:
