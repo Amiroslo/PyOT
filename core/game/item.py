@@ -231,7 +231,7 @@ class Item(object):
             if self.__getattr__('magiclevelpoints'):
                 morearm += ", %+d magic level" % self.__getattr__('magiclevelpoints')
             if self.__getattr__('absorbPercentAll'):
-                morearm = ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain' % {"all":self.__getattr__('absorbPercentAll')} # untested
+                morearm = ', %(all)+d%% Physical, %(all)+d%% Death, %(all)+d%% Fire, %(all)+d%% Ice, %(all)+d%% Earth, %(all)+d%% Energy, %(all)+d%% Holy, %(all)+d%% Drown, %(all)+d%% Poison, %(all)+d%% ManaDrain, %(all)+d%% Lifedrain' % {"all":self.__getattr__('absorbPercentAll')}
             # Step one, names to dict with value
             bonuses = {}
             for bns in bonus:
@@ -245,7 +245,7 @@ class Item(object):
                 morearm += ", %+d%% %s" % (bonuses[w], pre.lower())
             if morearm:
                 if not self.armor and not self.defence:
-				    morearm = morearm[2:]
+                    morearm = morearm[2:]
                 description += "%s" % morearm
             description += ")."
 
