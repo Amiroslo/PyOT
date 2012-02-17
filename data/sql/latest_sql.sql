@@ -25032,7 +25032,7 @@ CREATE TABLE IF NOT EXISTS `players` (
 --
 
 INSERT INTO `players` (`id`, `name`, `world_id`, `group_id`, `account_id`, `vocation`, `health`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `lookmount`, `mana`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `sex`, `skull`, `stamina`, `direction`, `marriage`, `guild`, `guild_rank`, `skills`, `conditions`, `storage`, `depot`, `inventory`) VALUES
-(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 2, 0, 0, 0, NULL, NULL, NULL, NULL, NULL);
+(2, 'Test', 0, 6, 1, 1, 15000, 717601, 68, 76, 78, 39, 302, 0, 0, 60000, 60000, 100, 1, 1000, 1000, 7, 1, 0, 151200000, 2, 0, 0, 0, NULL, NULL, NULL, "", "");
 
 CREATE TABLE `groups` (
 `group_id` INT( 11 ) UNSIGNED NOT NULL ,
