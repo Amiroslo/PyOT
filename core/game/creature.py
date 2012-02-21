@@ -735,7 +735,7 @@ class Creature(object):
                 self.message("You gain %d hitpoint%s due to healing by %s." % (amount, 's' if amount < 1 else '', by.name().capitalize()), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
             else:
                 self.message("You gain %d hitpoint%s." % (amount, 's' if amount < 1 else ''), 'MSG_HEALED', value = amount, color = COLOR_GREEN, pos=self.position)
-        target.modifyHealth(amount)
+        self.modifyHealth(amount)
         
     def onSpawn(self):
         pass # To be overrided
