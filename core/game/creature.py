@@ -1460,6 +1460,7 @@ class Condition(object):
     def __getstate__(self):
         d = self.__dict__.copy()
         d["creature"] = None
+        del d["tickEvent"]
         return d
 
 class Boost(Condition):

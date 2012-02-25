@@ -146,7 +146,7 @@ class Player(Creature):
         
         if self.data["conditions"]:
             self.conditions = pickle.loads(self.data["conditions"])
-            for x in self.conditions:
+            for x in self.conditions.copy():
                 self.conditions[x].start(self)
             
         # Storage states
