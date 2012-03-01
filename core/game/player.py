@@ -488,7 +488,7 @@ class Player(Creature):
                     if item[0] == 1:
                         self.inventory[item[2]+1-1] = None
                         stream.removeInventoryItem(item[2]+1)
-                    elif item[0] == 2:
+                    elif item[0] == 2 and item[2].openIndex != None:
                         item[2].container.removeItem(item[1])
                         stream.removeContainerItem(item[2].openIndex, item[3])
                         
