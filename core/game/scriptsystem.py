@@ -275,10 +275,10 @@ class ThingScripts(object):
         raise Exception("Threaded script is not allowed in this branch!")
     
     def runDefer(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._runDefer, thing, creature, end, True, True, **kwargs)
+        return defer.maybeDeferred(self._runDefer, thing, creature, end, True, **kwargs)
 
     def runDeferNoReturn(self, thing, creature, end=None, **kwargs):
-        return defer.maybeDeferred(self._run, thing, creature, end, False, True, **kwargs)
+        return defer.maybeDeferred(self._run, thing, creature, end, False, **kwargs)
         
     def runSync(self, thing, creature, end=None, **kwargs):
         return self._run(thing, creature, end, True, **kwargs)
