@@ -10,6 +10,9 @@ import game.engine
 import copy
 import time
 import marshal
+import inflect
+
+INFLECT = inflect.engine()
 
 try:
     import io # Python 2.7+
@@ -221,18 +224,15 @@ class Item(object):
                     return None
                        
         raise AttributeError, name
-        
+    
     def name(self, player=None):
         if not player:
             raise Exception("We need to have a player when asking for a items name now apperently!")
             
-        if self.count > 1 and "plural" in items[self.itemId]:
-            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, items[self.itemId]["plural"])}
-        else:
-            try:
-                return _l(player, items[self.itemId]["article"] + " " + items[self.itemId]["name"])
-            except:
-                return _l(player, items[self.itemId]["name"])
+        if self.count > 1:
+            return _l(player, "%(count)d %(plural_name)s") % {"count": self.count, "plural_name": _l(player, INFLECT.plural(items[self.itemId]["name"]))}
+            
+        return _l(player, INFLECT.a(items[self.itemId]["name"]))
     
     def description(self, player=None, position=None):
         bonus = ['absorbPercentDeath', 'absorbPercentPhysical', 'absorbPercentFire', 'absorbPercentIce', 'absorbPercentEarth', 'absorbPercentEnergy', 'absorbPercentHoly', 'absorbPercentDrown', 'absorbPercentPoison', 'absorbPercentManaDrain', 'absorbPercentLifeDrain']
@@ -312,8 +312,8 @@ class Item(object):
         return "%s%s\n" % (description, extra)
         
     def rawName(self):
-        if self.count > 1 and "plural" in items[self.itemId]:
-            return items[self.itemId]["plural"].title()
+        if self.count:
+            return INFLECT.plural(items[self.itemId]["name"].title())
         return items[self.itemId]["name"].title()
         
     def reduceCount(self, count):
@@ -621,7 +621,7 @@ def loadItems():
             pass
         
     # Async SQL (it's funny isn't it?)
-    d1 = sql.conn.runQuery("SELECT sid,cid,IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`plural` <> '' AND `plural` != `name`, `plural`, NULL) as `plural`,IF(`article` <> '', `article`, NULL) as `article`,IF(`subs`, `subs`, NULL) as `subs`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
+    d1 = sql.conn.runQuery("SELECT sid,cid,IF(`name` <> '', `name`, NULL) as `name`,IF(`type`, `type`, NULL) as `type`,IF(`subs`, `subs`, NULL) as `subs`,IF(`speed`, `speed`, NULL) as `speed`,cast(IF(`solid`, 1 << 0, 0) + IF(`blockprojectile`, 1 << 1, 0) + IF(`blockpath`, 1 << 2, 0) + IF(`usable`, 1 << 3, 0) + IF(`pickable`, 1 << 4, 0) + IF(`movable`, 1 << 5, 0) + IF(`stackable`, 1 << 6, 0) + IF(`ontop`, 1 << 7, 0) + IF(`hangable`, 1 << 8, 0) + IF(`rotatable`, 1 << 9, 0) + IF(`animation`, 1 << 10, 0) as unsigned integer) AS a FROM items")
     d2 = sql.conn.runQuery("SELECT sid, `key`, `value` FROM item_attributes") # We'll be waiting, won't we?
     
     
@@ -634,13 +634,7 @@ def loadItems():
     for item in (yield d1):
         sid = item[0]
         cid = item[1]
-        attr = {'cid':cid, 'a':item[8]}
-
-        if item[4] and item[4] != item[2]:
-            attr['plural'] = item[4]
-
-        if item[5]:
-            attr["article"] = item[5]
+        attr = {'cid':cid, 'a':item[6]}
 
         if item[3] != 1:
             loadItemNames[item[2]] = sid
@@ -651,15 +645,15 @@ def loadItems():
         if item[2]:
             attr['name'] = item[2]
 
-        if item[7]:
-            attr['speed'] = item[7]
+        if item[5]:
+            attr['speed'] = item[5]
 
         
         reverseLoadItems[cid] = sid
 
         loadItems[sid] = attr
-        if item[6]:
-            for x in xrange(1, item[6]+1):
+        if item[4]:
+            for x in xrange(1, item[4]+1):
                 loadItems[sid+x] = attr
                 
         if sid in MONEY_MAP2:
