@@ -403,16 +403,19 @@ class MonsterBase(CreatureBase):
                 if not tile:
                     log.msg("Spawning of creature('%s') on %s failed. Tile does not exist!" % (self.data["name"], str(position)))
                     return
-                elif tile.creatures() and config.tryToSpawnCreaturesNextToEachother:
+                elif tile.hasCreatures() and config.tryToSpawnCreaturesNextToEachother:
                     ok = False
                     for testx in (-1,0,1):
                         position[0] += testx
                         tile = map.getTile(position)
-                        if tile.creatures():
+                        if tile.hasCreatures():
                             for testy in (-1,0,1):
                                 position[0] += testy
                                 tile = map.getTile(position)
-                                if not tile.creatures():
+                                if not tile:
+                                    continue
+                                
+                                if not tile.hasCreatures():
                                     try:
                                         stackpos = map.getTile(position).placeCreature(monster)
                                         ok = True
@@ -431,7 +434,7 @@ class MonsterBase(CreatureBase):
                     if not ok:
                         log.msg("Spawning of creature('%s') on %s failed" % (self.data["name"], str(position)))
                         return
-                elif not tile.creatures() or config.tryToSpawnCreatureRegardlessOfCreatures:
+                elif not tile.hasCreatures() or config.tryToSpawnCreatureRegardlessOfCreatures:
                     try:
                         stackpos = tile.placeCreature(monster)
                     except:

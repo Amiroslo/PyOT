@@ -355,7 +355,7 @@ def testBoost(creature, **k):
     
 
 def walkRandomStep(creature, callback):
-    steps = [0,1,2,3,4,5,6,7]
+    steps = [0,1,2,3]
     
     random.shuffle(steps)
     def _callback():
@@ -406,3 +406,7 @@ def openMarket(creature, **k):
 def setLang(creature, **k):
     creature.setLanguage("es_ES")
     
+@register("talkaction", "forward!")
+@access("DEVELOPER")
+def moveForward(creature, **k):
+    creature.move(creature.direction)

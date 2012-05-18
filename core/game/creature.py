@@ -277,7 +277,7 @@ class Creature(object):
             position.x += 1
 
         position.z += level
-
+            
         # We don't walk out of the map!
         if position.x < 1 or position.y < 1 or position.x > data.map.info.width or position.y > data.map.info.height:
             self.cancelWalk()
@@ -364,6 +364,7 @@ class Creature(object):
 
             ignore = (self,)
             stream = self.packet()
+
             if (oldPosition.z != 7 or position.z < 8): # Only as long as it's not 7->8 or 8->7
                 #stream = spectator.packet(0x6D)
                 stream.uint8(0x6D)
@@ -410,12 +411,14 @@ class Creature(object):
 
 
             stream.send(self.client)
-            self.position = position
-            self.direction = direction % 4
+            
 
         else:
             ignore = ()
-
+            
+        self.position = position
+        self.direction = direction % 4
+        
         oldPosCreatures = getPlayers(oldPosition, ignore=ignore)
         newPosCreatures = getPlayers(position, ignore=ignore)
         spectators = oldPosCreatures|newPosCreatures
@@ -431,7 +434,7 @@ class Creature(object):
             stream = spectator.packet()
 
             if not canSeeOld and canSeeNew:
-                stream.addTileCreature(position, newStackPos, self, spectator)
+                stream.addTileCreature(position, newStackPos, self, spectator, resend=True)
 
             elif canSeeOld and not canSeeNew:
                 if isKnown:
@@ -476,9 +479,6 @@ class Creature(object):
         for creature2 in appearTo:
             game.scriptsystem.get('appear').runDeferNoReturn(creature2, self)
             game.scriptsystem.get('appear').runDeferNoReturn(self, creature2)
-        if not self.isPlayer():
-            self.position = position
-            self.direction = direction % 4
 
         if callback: reactor.callLater(0, callback)
         return True

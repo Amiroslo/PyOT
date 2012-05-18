@@ -333,7 +333,7 @@ class Tile(object):
     def topItems(self):
         for n in xrange(self._depack(PACK_ITEMS)):
             yield self.things[n]
-
+            
     def getItems(self):
         return itertools.chain(self.topItems(), self.bottomItems())
  
@@ -343,6 +343,9 @@ class Tile(object):
         
         for n in xrange(cc, cc + cd):
             yield self.things[n]
+    
+    def hasCreatures(self):
+        return self._depack(PACK_CREATURES)
         
     def topCreature(self):
         cd = self._depack(PACK_CREATURES)

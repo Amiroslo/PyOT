@@ -160,7 +160,7 @@ class TibiaPacket(object):
         if stream.xtea:
             data = otcrypto.encryptXTEA(data, stream.xtea)
 
-        stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    
+        stream.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)   
             
     #@inThread
     def sendto(self, list):
@@ -175,4 +175,4 @@ class TibiaPacket(object):
             if client.xtea:
                 data = otcrypto.encryptXTEA(data, client.xtea)
 
-            client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)    
+            client.transport.write(pack("<HI", len(data)+4, adler32(data) & 0xffffffff)+data)
