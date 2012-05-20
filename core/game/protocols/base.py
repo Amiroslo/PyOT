@@ -172,7 +172,9 @@ class BasePacket(TibiaPacket):
                     player.knownCreatures.add(creature)
                     creature.knownBy.add(player)
                     
-                self.creature(creature, known, removeKnown)
+                    self.creature(creature, known, removeKnown)
+                else:
+                    self.data += pack("<HIB", 99, creature.clientId(), creature.direction)
             if creature.creatureType != 0 and not creature.brainEvent:
                 creature.base.brain.handleThink(creature, False)
                     

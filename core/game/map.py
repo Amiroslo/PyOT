@@ -340,10 +340,12 @@ class Tile(object):
     def creatures(self):
         cc = self._depack(PACK_ITEMS)
         cd = self._depack(PACK_CREATURES)
-        
         for n in xrange(cc, cc + cd):
-            yield self.things[n]
-    
+            try:
+                yield self.things[n]
+            except:
+                return
+                
     def hasCreatures(self):
         return self._depack(PACK_CREATURES)
         

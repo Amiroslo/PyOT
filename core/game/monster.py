@@ -701,8 +701,8 @@ class MonsterBrain(object):
                 monster.turnOffBrain()
                 return False
             
-            """if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
-                self.walkRandomStep(monster) # Walk a random step"""
+            if not monster.walkPattern and monster.canWalk and not monster.action and time.time() - monster.lastStep > monster.walkPer: # If no other action is available
+                self.walkRandomStep(monster) # Walk a random step
 
         monster.brainEvent = reactor.callLater(random.uniform(1,2), self.handleThink, monster)
         
