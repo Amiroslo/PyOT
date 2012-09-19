@@ -75,6 +75,11 @@ playerCanChangeColor = True
 playerCanWearAllOutfits = False
 playerCanUseAllMounts = False
 
+# PvP
+playersAreAttackable = True # False = optional PvP
+skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP
+protectedZones = True # False will disable protected zones like in Harcore PvP
+
 # Loot / Drop
 lootDropRate = 1
 lootMaxRate = 1
