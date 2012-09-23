@@ -142,7 +142,7 @@ class Packet(base.BasePacket):
         self.uint8(creature.getSkull(player)) # Skull
         self.uint8(creature.shield) # Party/Shield
         if not known:
-            self.uint8(creature.emblem) # Emblem
+            self.uint8(creature.getEmblem(player)) # Emblem
         self.uint8(creature.solid) # Can't walkthrough
         
     def status(self, player):
