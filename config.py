@@ -106,7 +106,7 @@ orangeSkullLength = 3600 * 7 * 24 # In seconds.
 
 # War system.
 # See data/scripts/other/war_system.py
-
+enableWarSystem = True
 warFee = 1000 # in gold.
 minWarDuratiom = 7 * 3600 * 24  # In seconds
 maxWarDuration = 180 * 3600 * 24 # In seconds
