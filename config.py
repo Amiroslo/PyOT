@@ -1,4 +1,4 @@
-# Note: Don't do imports here
+from math import log, floor
 
 # Network:
 loginInterface = '' # Leave blank to accept connections on any hostname
@@ -37,6 +37,9 @@ sqlSocket = None
 # LoginServer, seperate or integrated? This allows you to let the game server handle the loginserver. Doesn't stack very well when using multi server.
 letGameServerRunTheLoginServer = True
 
+# This servers worldId
+worldId = 0
+
 # Versions:
 versionMin = 860
 versionMax = 963
@@ -74,6 +77,50 @@ playerCanChangeOutfit = True
 playerCanChangeColor = True
 playerCanWearAllOutfits = False
 playerCanUseAllMounts = False
+
+# PvP
+trackHits = 40 # How many hits are we suppose to track? This is important for both assists and experience splitting.
+globalProtectionZone = False # True = optional PvP. Scripts might change a players attackability. This set a global protection zone and override protectedZones = False.
+skullSystem = True # False means skulls and skull effects are disabled. Like in Optional PvP, or Hardcore PvP. Scripts can still raise skulls tho.
+protectedZones = True # False will disable protected zones like in Harcore PvP. Scripts can force set protected zones.
+protectionLevel = 200 #0 noone is protected, X > 0 protection until that level
+
+loginBlock = 60 # In seconds, 0 to disable.
+resetSkulls = True # If a player takes new offence in a skull periode will  it reset the timer?
+pvpDamageFactor = 0.5 # 50%
+
+deathListCutoff = 45 # In days. This is the maximum amount of time we care to load in death entries from.
+
+whiteSkull = 15 * 60 # In seconds, 0 to disable
+
+redSkull = 60 * 60 * 24 * 30 # Red skull, in seconds. 0 to disable
+redSkullUnmarked = {24:3, 7*24:5, 30*24:10} # {periode in hours: KILLS}
+redSkullLoseRate = 100 # Aga, lose everything, 0 to disable and fall back to default rates. This also count for blackSkull.
+
+blackSkull = 60 * 60 * 24 * 45 # Black skull, in seconds. 0 to disable
+blackSkullUnmarked = {24:6, 7*24:10, 30*24:20} # {periode in hours: KILLS}
+blackSkullDisableAreaSpells = True
+blackSkullDisableAreaRules = True
+blackSkullDisableSummons = True
+blackSkullFullDamage = True # Receive 100% instead of pvpDamageFactor.
+
+yellowSkull = True # Enable/Disable this. Disaled = all kills and unjust
+orangeSkull = True
+orangeSkullLength = 3600 * 7 * 24 # In seconds.
+
+# War system.
+# See data/scripts/other/war_system.py
+enableWarSystem = True
+warFee = 1000 # in gold.
+minWarDuratiom = 7 * 3600 * 24  # In seconds
+maxWarDuration = 180 * 3600 * 24 # In seconds
+maxWarLosePenalty = 20000000000 # 2 billion, in gold.
+warFragLimit = 1000 # In kills.
+greenSkull = True
+
+# Lose rate
+loseCutoff = 25 # Set to 0 to disable loose entierly.
+loseConstant = 10 # For players with level < loseCutoff. Otherwise we use loseFormula divided by experience.
 
 # Loot / Drop
 lootDropRate = 1
@@ -164,7 +211,7 @@ defaultSkillLevel = 10 # Must be between 10 and 0xFFFF
 
 # Vocation stuff (often occure on custom vocations, or pre-level 8 promoted characters.).
 minHealth = 150
-minMana = 100
+minMana = 0
 
 # Language
 # Default (fallback) language.
@@ -222,12 +269,15 @@ drawingSpeed = 25
 # Formulas
 levelFormula = lambda x: 50*(x**2)-150*x+200
 totalExpFormula = lambda x: (50.0/3)*x*((x-3)*x+8)
+loseFormula = lambda x: (x+50)*(50*((x**2) - (5*x) + 8)) # x = level
+
+# PvP formulas
+pvpExpFormula = lambda killerLevel, victimLevel, victimExperience: max(0, floor((floor(victimLevel * 1.1) - killerLevel)/victimLevel) * floor(victimExperience * 0.05))
 
 # pathfinder cache?
 pathfinderCache = True
 
 # This formula is too complex to put into a lambda
-from math import log
 def levelFromExpFormula(y): # y = experience
     l1 = ((3 ** 0.5)*(((243*(y**2))-(48600*y)+3680000) ** 0.5)+(27*y)-2700) ** (1.0/3)
     l2 = 30**(2.0/3)
