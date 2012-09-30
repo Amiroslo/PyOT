@@ -57,6 +57,12 @@ def windowsLoading():
 
 # The loader rutines, async loading :)
 def loader(timer):
+    currPath = os.getcwd()
+    stdout = sys.stdout
+    if "_trial_temp" in currPath:
+        os.chdir("..")
+        # Also ugly hack.
+        sys.stdout = StringIO()
     # Attempt to get the Merucurial rev
     if os.path.exists(".hg"):
         try:
@@ -276,7 +282,7 @@ def loader(timer):
     print "%50s\n" % _txtColor("\t[DONE]", "blue")
     
     # Do we issue saves?
-    if config.doSaveAll:
+    if config.doSaveAll and "_trial_temp" not in currPath:
         print "> > Schedule global save...",
         reactor.callLater(config.saveEvery, looper, saveAll, config.saveEvery)
         print "%50s\n" % _txtColor("\t[DONE]", "blue")
@@ -288,14 +294,18 @@ def loader(timer):
     # Reset online status on shutdown
     game.scriptsystem.get("shutdown").register(lambda **k: sql.conn.runOperation("UPDATE players SET online = 0"), False)
     # Light stuff
-    print "> > Turn world time and light on...",
-    lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
+    if "_trial_temp" not in currPath:
+        print "> > Turn world time and light on...",
+        lightchecks = config.tibiaDayLength / float(config.tibiaFullDayLight - config.tibiaNightLight)
 
-    reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
-    print "%45s" % _txtColor("\t[DONE]", "blue")
+        reactor.callLater(lightchecks, looper, checkLightLevel, lightchecks)
+        print "%45s" % _txtColor("\t[DONE]", "blue")
     
-    reactor.callLater(60, looper, pathfinder.clear, 60)
+        reactor.callLater(60, looper, pathfinder.clear, 60)
     
+    else:
+        os.chdir(currPath)
+        
 # Just a inner funny call
 def looper(function, time):
     """Looper decorator"""

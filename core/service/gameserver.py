@@ -48,7 +48,6 @@ class GameProtocol(protocolbase.TibiaProtocol):
     @inlineCallbacks
     def onFirstPacket(self, packet):
         packetType = packet.uint8()
-
         if packetType and not self.ready:
             packet.pos += 2 # OS 0x00 and 0x01
             #packet.uint16() 
