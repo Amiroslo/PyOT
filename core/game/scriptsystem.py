@@ -482,6 +482,7 @@ globalScripts["hit"] = CreatureScripts(('creature', 'creature2', 'damage', 'type
 globalScripts["death"] = CreatureScripts(('creature', 'creature2', 'corpse'))
 globalScripts["respawn"] = Scripts(('creature',))
 globalScripts["reload"] = NCScripts()
+globalScripts["postReload"] = NCScripts()
 globalScripts["startup"] = NCScripts()
 globalScripts["shutdown"] = NCScripts()
 globalScripts["move"] = Scripts(('creature',))
@@ -589,6 +590,7 @@ def reimporter():
     global globalEvents
     process = get("reload").runSync()
     if process == False:
+        print "[WARNING]: Reload cancelled."
         return
 
     # Unload all the global events
@@ -617,6 +619,9 @@ def reimporter():
          
     # Step 3 cleanups.
     reimportCleanup()
+    
+    # Step 4 postReload.
+    get("postReload").runSync()
     
 def reimportCleanup():
     for script in globalScripts:
