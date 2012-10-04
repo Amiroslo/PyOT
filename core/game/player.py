@@ -1094,9 +1094,13 @@ class Player(Creature):
         stream.send(self.client)
 
     def cancelMessage(self, message):
+        if self.raiseMessages:
+            raise MsgCancel(message)
         self.message(message, MSG_STATUS_SMALL)
 
     def notPossible(self):
+        if self.raiseMessages:
+            raise MsgNotPossible
         self.cancelMessage(_l(self, "Sorry, not possible."))
 
     def notPickupable(self):
@@ -1125,6 +1129,8 @@ class Player(Creature):
         self.cancelMessage(_l(self, "You can only use it on creatures."))
 
     def unmarkedPlayer(self):
+        if self.raiseMessages:
+            raise MsgUnmarkedPlayer
         self.cancelMessage(_l(self, "Turn secure mode off if you really want to attack unmarked players."))
         
     def updateContainer(self, container, parent=False, update=True):
