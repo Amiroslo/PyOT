@@ -929,7 +929,7 @@ class BaseProtocol(object):
                 player.notPossible()
                 return
         else:
-            thing = player.findItem(stackPosition)     
+            thing = player.findItem(stackPosition)
             if not thing or thing.cid != clientId:
                 for thing2 in game.map.getTile(position).things:
                     if thing2.cid == clientId:

@@ -165,7 +165,7 @@ class Monster(Creature):
                         if lenLoot == 2:
                             ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], 1)
                             lootMsg.append(ritem.name())
-                            ret = corpse.container.placeItemRecursive(ritem)
+                            ret = corpse.placeItemRecursive(ritem)
                                 
                         elif lenLoot == 3:
                             count = random.randint(1, loot[2]) * config.lootMaxRate
@@ -174,12 +174,12 @@ class Monster(Creature):
                                     depCount = min(count, 100)
                                     ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
                                     lootMsg.append(ritem.name())
-                                    ret = corpse.container.placeItemRecursive(ritem)
+                                    ret = corpse.placeItemRecursive(ritem)
                                     count -= depCount
                             else:
                                 ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                                 lootMsg.append(ritem.name())
-                                ret = corpse.container.placeItemRecursive(ritem)
+                                ret = corpse.placeItemRecursive(ritem)
                                     
                         elif lenLoot == 4:
                             count = random.randint(loot[4], loot[2]) * config.lootMaxRate
@@ -188,13 +188,13 @@ class Monster(Creature):
                                     depCount = min(count, 100)
                                     ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], depCount)
                                     lootMsg.append(ritem.name())
-                                    ret = corpse.container.placeItemRecursive(ritem)
+                                    ret = corpse.placeItemRecursive(ritem)
                                     count -= depCount
                                         
                             else:
                                 ritem = game.item.Item(random.choice(loot[0]) if isinstance(loot[0], list) else loot[0], count)
                                 lootMsg.append(ritem.name())
-                                ret = corpse.container.placeItemRecursive(ritem)
+                                ret = corpse.placeItemRecursive(ritem)
                                     
 
                         if ret == None:

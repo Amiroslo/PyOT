@@ -22,81 +22,6 @@ except:
     
 items = {}
 reverseItems = {}
-
-### Container class ###
-class Container(object):
-    # TODO: Kill this class.
-    __slots__ = ('items')
-    def __init__(self, size):
-        self.items = deque(maxlen=size)
-    
-    def __getstate__(self): # For pickle functions such as jsonpickle
-        return self.items
-    
-    def __setstate__(self, state):
-        self.items = state
-        
-    def placeItem(self, item):
-        if len(self.items) < self.items.maxlen:
-            self.items.appendleft(item)
-            return 0
-
-    def placeItemRecursive(self, item):
-        if len(self.items) < self.items.maxlen:
-            self.items.appendleft(item)
-            return 0
-        else:
-            for itemX in self.items:
-                if itemX.containerSize and itemX.container.placeItemRecursive(item) == 0:
-                    return itemX
-
-    def size(self):
-        return len(self.items)
-    
-    def weight(self):
-        weight = 0
-        for item in self.getRecursive():
-            iweight = item.weight
-            if iweight:
-                weight += iweight * (item.count or 1)
-                
-        return weight
-        
-    def removeItem(self, item):
-        return self.items.remove(item)
-        
-    def getThing(self, pos):
-        try:
-            return self.items[pos]
-        except:
-            return None
-    
-    def getRecursive(self, items = None):
-        if items == None:
-            items = self.items
-            
-        for item in items:
-            yield item
-            if item != self and item.containerSize:
-                for i in self.getRecursive(item.container.items):
-                    yield i
-
-    def getRecursiveWithBag(self, items = None):
-        if not items:
-            items = self.items
-            
-        for pos, item in enumerate(items):
-            yield (item, self, pos)
-            if item.containerSize:
-                for i in self.getRecursiveWithBag(item.container.items):
-                    yield i
-                    
-    def findSlot(self, item):
-        return self.items.index(item)
-
-    def __repr__(self):
-        return "<Container (%d/%d) at %s>" % (self.size(), self.items.maxlen, hex(id(self)))
-        
             
 ### Item ###
 class Item(object):
@@ -124,7 +49,7 @@ class Item(object):
             
         # Extend items such as containers
         try:
-            self.container = Container(self._itemBase["containerSize"])
+            self.container = deque(maxlen=self._itemBase["containerSize"])
         except KeyError:
             pass
 
@@ -179,11 +104,11 @@ class Item(object):
                     print pos.y - 64
                     return False
                     
-                if container.container.items[pos.z] == self:
+                if container.container[pos.z] == self:
                     return pos
                 else:
-                    for z in xrange(len(container.container.items)):
-                        if container.container.items[z] == self:
+                    for z in xrange(len(container.container)):
+                        if container.container[z] == self:
                             pos.z = z
                             return pos
                     return False # Not found
@@ -360,7 +285,7 @@ class Item(object):
         extra = ""
         if player and (not position or position.x == 0xFFFF or player.inRange(position, 1, 1)): # If position ain't set/known, we're usually in a trade situation and we should show it.
             if self.containerSize:
-                extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.weight + self.container.weight()) / 100)
+                extra += _l(player, "\nIt weighs %.2f oz.") % (float(self.weight + self.containerWeight()) / 100)
                 
             elif self.weight:
                 if self.count:
@@ -635,17 +560,17 @@ class Item(object):
                 
                 try:
                     creature.inventoryCache[bag.itemId].index(bag)
-                    currItem = bag.container.items[position.z]
+                    currItem = bag.container[position.z]
                     if currItem:
                         if creature.removeCache(currItem):
                             update = True
                     
                     ret = creature.addCache(self, bag)
                     if ret == False:
-                        del bag.container.items[position.z]
+                        del bag.container[position.z]
                     elif ret == True:    
                         update = True
-                        bag.container.items[position.z] = self
+                        bag.container[position.z] = self
                         
                     stream = creature.packet()
                     stream.updateContainerItem(position.y - 64, position.z, self)
@@ -653,7 +578,7 @@ class Item(object):
                         creature.refreshStatus(stream)
                     stream.send(creature.client)
                 except:  
-                    bag.container.items[position.z] = self
+                    bag.container[position.z] = self
                     stream = creature.packet()
                     stream.updateContainerItem(position.y - 64, position.z, self)
                     stream.send(creature.client)
@@ -663,6 +588,65 @@ class Item(object):
         r = self.__dict__.copy()
         del r["actions"]
         return "<Item (%s) at %s>" % (r, hex(id(self)))
+    
+    ##### Container stuff ####
+    def placeItem(self, item):
+        if len(self.container) < self.container.maxlen:
+            self.container.appendleft(item)
+            return 0
+
+    def placeItemRecursive(self, item):
+        if len(self.container) < self.container.maxlen:
+            self.container.appendleft(item)
+            return 0
+        else:
+            for itemX in self.container:
+                if itemX.containerSize and itemX.placeItemRecursive(item) == 0:
+                    return itemX
+
+    def size(self):
+        return len(self.container)
+    
+    def containerWeight(self):
+        weight = 0
+        for item in self.getRecursive():
+            iweight = item.weight
+            if iweight:
+                weight += iweight * (item.count or 1)
+                
+        return weight
+        
+    def removeItem(self, item):
+        return self.container.remove(item)
+        
+    def getThing(self, pos):
+        try:
+            return self.container[pos]
+        except:
+            return None
+    
+    def getRecursive(self, items = None):
+        if items == None:
+            items = self.container
+            
+        for item in items:
+            yield item
+            if item != self and item.containerSize:
+                for i in self.getRecursive(item.container):
+                    yield i
+
+    def getRecursiveWithBag(self, items = None):
+        if not items:
+            items = self.container
+            
+        for pos, item in enumerate(items):
+            yield (item, self, pos)
+            if item.containerSize:
+                for i in self.getRecursiveWithBag(item.container):
+                    yield i
+                    
+    def findSlot(self, item):
+        return self.container.index(item)
             
 def cid(itemid):
     try:

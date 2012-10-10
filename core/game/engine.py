@@ -840,21 +840,18 @@ def saveAll(force=False):
                     log.msg("House id %d have broken items!" % houseId)
                     items = {} # Broken items
                     
-                try:
-                    for tile in game.map.houseTiles[houseId]:
-                        _items = []
-                        for item in tile.bottomItems():
-                            ic = item.count
-                            if not item.fromMap and (ic == None or ic > 0):
-                                _items.append(item)
-                        if _items:
-                            items[tile.position] = _items
-                except:
-                    pass
-                if items != house.data["items"]:
+                for tile in game.map.houseTiles[houseId]:
+                    _items = []
+                    for item in tile.bottomItems():
+                        ic = item.count
+                        if not item.fromMap and (ic == None or ic > 0):
+                            _items.append(item)
+                    items[tile.position] = _items
+
+                if items != house.data["items"]  or force:
                     house.data["items"] = items
                     house.save = True # Force save
-                if house.save or force:
+                if house.save:
                     log.msg("Saving house ", houseId)
                     sql.runOperation("UPDATE `houses` SET `owner` = %s,`guild` = %s,`paid` = %s, `data` = %s WHERE `id` = %s", (house.owner, house.guild, house.paid, fastPickler(house.data), houseId))
                     house.save = False
@@ -1066,6 +1063,9 @@ def loadPlayerById(playerId):
         returnValue(game.player.allPlayers[cd['name']])
 
 def moveItem(player, fromPosition, toPosition, count=0):
+    if fromPosition == toPosition:
+        return True
+        
     # TODO, script events.
     
     # Analyse a little.
@@ -1085,11 +1085,11 @@ def moveItem(player, fromPosition, toPosition, count=0):
         
     thing = player.findItem(fromPosition)
     destItem = None
-    if isinstance(toPosition, StackPosition):
+    if toPosition.x == 0xFFFF or isinstance(toPosition, StackPosition):
         destItem = player.findItem(toPosition)
     if not thing:
         return False
-        
+    
     # Some vertifications.
     if thing.stackable and count and count > thing.count:
         return player.notPossible()
@@ -1133,16 +1133,26 @@ def moveItem(player, fromPosition, toPosition, count=0):
         player.modifyItem(destItem, toPosition, newCount)
         player.modifyItem(thing, fromPosition, -count)
         return
-    
+        
     # remove from fromPosition.
     elif count and thing.stackable:
         newItem = thing.copy()
         newItem.count = count
         
         player.modifyItem(thing, fromPosition, -count)
+        
     else:
-        newItem = thing.copy()
-        player.removeItem(fromPosition, thing)
+        newItem = newItem = thing.copy() # Easy enough.
+        
+    if destItem and destItem.containerSize:
+        if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
+            return
+        if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+            return
+        
+        player.itemToContainer(destItem, newItem)
+        
+    player.removeItem(fromPosition, thing)
 
     if toMap:
         # Place to ground.
@@ -1157,28 +1167,23 @@ def moveItem(player, fromPosition, toPosition, count=0):
         toPosition.getTile().placeItem(newItem)
         updateTile(toPosition, toPosition.getTile())
         
-    elif toPosition.x == 0xFFFF and toPosition.y < 64:
-        # Inventory.
-        player.itemToInventory(newItem, toPosition.y)
-        
-    elif destItem and destItem.container:
-        if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=destItem) == False:
-            return
-        if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-            return
-        
-        player.itemToContainer(destItem, newItem)
-    else:
-        container = player.getContainer(toPosition.y-64)
-        
-        if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
-            return
-        if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
-            return
-        
-        player.itemToContainer(container, newItem)
+    if not destItem or not destItem.containerSize:
+        if toPosition.x == 0xFFFF and toPosition.y < 64:
+            print "OW NO", destItem
+            # Inventory.
+            player.itemToInventory(newItem, toPosition.y)
+            
+        else:
+            container = player.getContainer(toPosition.y-64)
+            
+            if game.scriptsystem.get('useWith').runSync(newItem, player, position=fromPosition, onPosition=toPosition, onThing=container) == False:
+                return
+            if game.scriptsystem.get('useWith').runSync(container, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
+                return
+            
+            player.itemToContainer(container, newItem)
     
-    if destItem and toPosition.x == 0xFFFF:
+    if (destItem and not destItem.containerSize) and toPosition.x == 0xFFFF:
         # Move destItem.
         if thing.inContainer:
             player.itemToContainer(thing.inContainer, destItem)
