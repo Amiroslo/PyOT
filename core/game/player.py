@@ -130,23 +130,8 @@ class Player(Creature):
             purse = Item(1987)
             purse.name = "Purse"
             purse.addAction('purse')
-            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463),
-                              None, Item(7449), None, None, None,
-                              Item(2546,20), purse]
-
-            for item in self.inventory:
-                if not item:
-                    continue
-
-                weight = item.weight
-                if weight:
-                    self.inventoryWeight += weight * (item.count or 1)
-                try:
-                    self.inventoryCache[item.itemId].append(item)
-                    self.inventoryCache[item.itemId][0] += item.count or 1
-                except:
-                    self.inventoryCache[item.itemId] = [item.count or 1, item]
-
+            self.inventory = [None, None, None, None, None, None, None, None, None, None, purse] # Last item XXX is purse.
+            
         #del self.data['inventory']
 
         # Depot, (yes, we load it here)
@@ -358,7 +343,7 @@ class Player(Creature):
                     stream.uint8(0x79)
                     stream.uint8(slot)
                     
-            if streamX:
+            if not streamX:
                 stream.send(self.client)
     def refreshStatus(self, stream=None):
         if self.client:
@@ -448,8 +433,7 @@ class Player(Creature):
                     bag = self.openContainers[position.y - 64]
                 except:
                     return
-
-                item = bag.container.getThing(position.z)
+                item = bag.getThing(position.z)
                 return item
 
         # Option 4, find any item the player might posess
@@ -483,7 +467,7 @@ class Player(Creature):
                     bag = self.openContainers[position.y - 64]
                 except:
                     return
-                item = bag.container.getThing(position.z)
+                item = bag.getThing(position.z)
                 return (2, item, bag)
 
         # Option 4, find any item the player might posess
@@ -492,7 +476,7 @@ class Player(Creature):
             try:
                 itemFound = self.inventoryCache[sid][-1]
                 if item.container:
-                    return (3, itemFound, itemFound.container)
+                    return (3, itemFound, itemFound)
             except:
                 return None
 
@@ -516,7 +500,7 @@ class Player(Creature):
             bags = [self.inventory[2]]
             for bag in bags:
                 index = 0
-                for item in bag.container.items:
+                for item in bag.container:
                     if item.itemId == itemId:
                         items.append((2, item, bag, index))
                         if count:
@@ -538,7 +522,7 @@ class Player(Creature):
                 stream.removeInventoryItem(items[0][2]+1)
 
             elif items[0][0] == 2:
-                items[0][2].container.removeItem(items[0][1])
+                items[0][2].removeItem(items[0][1])
                 if items[0][2].openIndex != None:
                     stream.removeContainerItem(items[0][2].openIndex, items[0][3])
 
@@ -572,7 +556,7 @@ class Player(Creature):
                         self.inventory[item[2]+1-1] = None
                         stream.removeInventoryItem(item[2]+1)
                     elif item[0] == 2 and item[2].openIndex != None:
-                        item[2].container.removeItem(item[1])
+                        item[2].removeItem(item[1])
                         stream.removeContainerItem(item[2].openIndex, item[3])
 
                     # Update cached data
@@ -635,14 +619,14 @@ class Player(Creature):
 
             try:
                 self.inventoryCache[bag.itemId].index(bag)
-                currItem = bag.container.items[position.z]
+                currItem = bag.container[position.z]
                 if currItem:
                     if self.removeCache(currItem):
                         update = True
             except:
                 pass
 
-            del bag.container.items[position.z]
+            del bag.container[position.z]
             with self.packet() as stream:
                 stream.removeContainerItem(position.y - 64, position.z)
                 if update:
@@ -1131,6 +1115,7 @@ class Player(Creature):
         self.message(message, MSG_STATUS_SMALL)
 
     def notPossible(self):
+        raise Exception()
         if self.raiseMessages:
             raise MsgNotPossible
         self.cancelMessage(_l(self, "Sorry, not possible."))
@@ -1197,9 +1182,9 @@ class Player(Creature):
 
                 stream.uint8(i[1].containerSize)
                 stream.uint8(parent)
-                stream.uint8(len(i[1].container.items))
+                stream.uint8(len(i[1].container))
 
-                for item in i[1].container.items:
+                for item in i[1].container:
                     stream.item(item)
         else:
             stream = self.packet()
@@ -1242,9 +1227,9 @@ class Player(Creature):
 
             stream.uint8(container.containerSize)
             stream.uint8(parent)
-            stream.uint8(len(container.container.items))
+            stream.uint8(len(container.container))
 
-            for item in container.container.items:
+            for item in container.container:
                 stream.item(item)
 
             stream.send(self.client)
@@ -1372,7 +1357,7 @@ class Player(Creature):
             slot = 0
             bags = [container]
             for bag in bags:
-                for itemX in container.container.items:
+                for itemX in container.container:
                     if itemX.itemId == item.itemId and itemX.count < 100:
                         total = itemX.count + count
                         Tcount = min(total, 100)
@@ -1415,9 +1400,9 @@ class Player(Creature):
                 return False
 
             if recursive:
-                info = container.container.placeItemRecursive(item)
+                info = container.placeItemRecursive(item)
             else:
-                info = container.container.placeItem(item)
+                info = container.placeItem(item)
 
             item.decayCreature = self
 
@@ -1818,13 +1803,13 @@ class Player(Creature):
         # Are we suppose to lose the container?
         itemLoseRate = self.itemLosePrecent()
         if self.inventory[2] and random.randint(1, 100) < itemLoseRate[0]:
-            corpse.container.placeItem(self.inventory[2])
+            corpse.placeItem(self.inventory[2])
             self.inventory[2] = None
             
         # Loop over each item in the inventory to see if we lose em.
         for index in xrange(SLOT_FIRST-1, SLOT_CLIENT_SLOTS):
             if self.inventory[index] and random.randint(1, 1000) < (itemLoseRate[1] * 10):
-                corpse.container.placeItem(self.inventory[index])
+                corpse.placeItem(self.inventory[index])
                 self.inventory[index] = None
 
         if not self.alive and self.data["health"] < 1:
@@ -1912,7 +1897,7 @@ class Player(Creature):
 
     # Loading:
     def __buildInventoryCache(self, container):
-        for item in container.container.items:
+        for item in container.container:
             weight = item.weight
 
             item.inContainer = container # Funny call to simplefy lookups
@@ -1937,7 +1922,7 @@ class Player(Creature):
             purse = Item(1987)
             purse.name = "Purse"
             purse.addAction('purse')
-            self.inventory = [Item(8820), Item(2125), Item(1987), Item(2463), None, Item(7449), None, None, None, Item(2546, 20), purse] # Last item XXX is purse.
+            self.inventory = [None, None, None, None, None, None, None, None, None, None, purse] # Last item XXX is purse.
 
         # Generate the inventory cache
         for item in self.inventory:
@@ -2052,7 +2037,7 @@ class Player(Creature):
             return 0
 
         money = 0
-        for item in self.inventory[2].container.getRecursive():
+        for item in self.inventory[2].getRecursive():
             currency = item.currency
             if currency:
                 money += currency * item.count
@@ -2062,7 +2047,7 @@ class Player(Creature):
     def removeMoney(self, amount):
         moneyItems = []
         money = 0
-        for item, bag, pos in self.inventory[2].container.getRecursiveWithBag():
+        for item, bag, pos in self.inventory[2].getRecursiveWithBag():
             currency = item.currency
             if currency:
                 money += currency * item.count
@@ -2158,7 +2143,7 @@ class Player(Creature):
         for x in items:
             count += 1
             if x.containerSize:
-                count += self._getDepotItemCount(x.container.items)
+                count += self._getDepotItemCount(x.container)
         return count
 
     def getDepotItemCount(self, depotId):
@@ -2766,7 +2751,7 @@ class Player(Creature):
             _items.append(item)
             itemCount += 1
             if itemCount != 255 and item.containerSize:
-                for i in item.container.items:
+                for i in item.container:
                     stream.item(i)
                     itemCount += 1
                     if itemCount == 255:

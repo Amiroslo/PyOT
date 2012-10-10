@@ -448,4 +448,27 @@ def delayWalk(creature, **k):
     creature.lmessage("Ow no, your stuck!")
     callLater(10, lambda: creature.lmessage("You may walk again!"))
     
+@register("talkaction", "newinventory")
+@access("DEVELOPER")
+def newInventory(creature, **k):
+    purse = Item(1987)
+    purse.name = "Purse"
+    purse.addAction('purse')
+    creature.inventory = [Item(8820), Item(2125), Item(1987), Item(2463),
+                      None, Item(7449), None, None, None,
+                      Item(2546,20), purse]
+
+    for item in creature.inventory:
+        if not item:
+            continue
+        weight = item.weight
+        if weight:
+            creature.inventoryWeight += weight * (item.count or 1)
+        try:
+            creature.inventoryCache[item.itemId].append(item)
+            creature.inventoryCache[item.itemId][0] += item.count or 1
+        except:
+            creature.inventoryCache[item.itemId] = [item.count or 1, item]
     
+    creature.refreshInventory()
+    return False
