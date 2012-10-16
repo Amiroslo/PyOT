@@ -28,3 +28,8 @@ class TestPlayer(FrameworkTestGame):
         self.player.teleport(newPosition)
         
         self.assertEqual(newPosition, self.player.position)
+        
+    def test_attackinheritence(self):
+        """ A bug reported here: http://vapus.net/forum/pyot-opentibia-server-287/debug-serious-bugs-thread-2925-100/#post31523 """
+        # This should NOT raise.
+        self.player.cancelTarget(None)
