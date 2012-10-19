@@ -377,7 +377,7 @@ def updateTile(pos, tile):
         stream.uint8(0xFF)
         stream.send(spectator)
 
-def transformItem(item, transformTo, pos):
+def transformItem(item, transformTo):
     """ Transform item to a new Id.
     
     :param item: The item you want to transform.
@@ -391,7 +391,7 @@ def transformItem(item, transformTo, pos):
     
     
     """
-    pos = item.vertifyPosition(None, pos)
+    """pos = item.vertifyPosition()
     if not pos:
         raise Exception("BUG: Can't vertify position")
  
@@ -413,7 +413,9 @@ def transformItem(item, transformTo, pos):
         if transformTo:
             stream.addTileItem(pos, newStackpos, item)
             
-        stream.send(spectator)
+        stream.send(spectator)"""
+
+    return item.transform(transformTo)
 
 def teleportItem(item, fromPos, toPos):
     """ "teleport" a item from ``fromPos`` to ``toPos``
@@ -855,8 +857,8 @@ def moveItem(player, fromPosition, toPosition, count=0):
         _newItem = game.scriptsystem.get("stack", thing, position=fromPosition, onThing=destItem, onPosition=toPosition, count=count, end=False)
         if not newItem:
             newCount = min(100, destItem.count + count) - destItem.count
-            player.modifyItem(destItem, toPosition, newCount)
-            player.modifyItem(thing, fromPosition, -count)
+            player.modifyItem(destItem, newCount)
+            player.modifyItem(thing, -count)
             return True
         else:
             newItem = _newItem
@@ -866,7 +868,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
         newItem = thing.copy()
         newItem.count = count
         
-        player.modifyItem(thing, fromPosition, -count)
+        player.modifyItem(thing, -count)
         
     else:
         newItem = thing # Easy enough.
@@ -877,11 +879,13 @@ def moveItem(player, fromPosition, toPosition, count=0):
         if game.scriptsystem.get('useWith').runSync(destItem, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
             return False
         
+        if not thing.stackable:
+            player.removeItem(thing)
+            
         player.itemToContainer(destItem, newItem)
-        
-    if not thing.stackable:
-        print "This xxx", thing
-        player.removeItem(fromPosition, thing)
+    else:    
+        if not thing.stackable:
+            player.removeItem(thing)
     
     if toMap:
         # Place to ground.
@@ -893,8 +897,7 @@ def moveItem(player, fromPosition, toPosition, count=0):
             if game.scriptsystem.get('useWith').runSync(item, player, position=toPosition, onPosition=fromPosition, onThing=newItem) == False:
                 return False
             
-        toPosition.getTile().placeItem(newItem)
-        updateTile(toPosition, toPosition.getTile())
+        newItem.place(toPosition)
     else:
         if not destItem or not destItem.containerSize:
             if toPosition.y < 64:
