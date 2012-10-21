@@ -28,9 +28,9 @@ TEST_PLAYER_NAME = "__TEST__"
 
 __builtin__.PYOT_RUN_SQLOPERATIONS = False
 # Async sleeper.
-def asyncSleep(seconds):
+def asyncWait():
     d = defer.Deferred()
-    reactor.callLater(seconds, d.callback, seconds)
+    reactor.callLater(0.01, d.callback, True) # a number >= 10ms will do. It's 5-6 sql queries.
     return d
 
 class Client(proto_helpers.StringTransport):
@@ -140,9 +140,9 @@ class FrameworkTest(unittest.TestCase):
             # Note, we use 0 here so we don't begin to load stuff before the reactor is free to do so, SQL require it, and anyway the logs will get fucked up a bit if we don't
             self.server = SERVER
             d = game.loading.loader(startTime)
-            # HACK!
-            # Kinda necessary if any scripts use load events from say SQL.
-            d.addCallback(lambda x: asyncSleep(0.5))
+            
+            # Kinda necessary if any scripts use load events from say SQL. 
+            d.addCallback(lambda x: asyncWait())
             return d
         self.server = SERVER
         
