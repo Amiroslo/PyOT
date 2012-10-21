@@ -38,16 +38,16 @@ def calculateAreaDirection(position, direction, area):
                         continue
 
                 if direction == 0: # North:
-                    pos = game.map.Position(position.x - xp, position.y - yp, position.z) # Our new position
+                    pos = game.position.Position(position.x - xp, position.y - yp, position.z) # Our new position
                     
                 elif direction == 1: # East
-                    pos = game.map.Position(position.x + yp, position.y + xp, position.z) # Our new position
+                    pos = game.position.Position(position.x + yp, position.y + xp, position.z) # Our new position
                     
                 elif direction == 2: # South
-                    pos = game.map.Position(position.x + xp, position.y + yp, position.z) # Our new position
+                    pos = game.position.Position(position.x + xp, position.y + yp, position.z) # Our new position
                     
                 elif direction == 3: # West
-                    pos = game.map.Position(position.x - yp, position.y - xp, position.z) # Our new position
+                    pos = game.position.Position(position.x - yp, position.y - xp, position.z) # Our new position
                     
                 if xp > maxEntry: # Determin this as our new min/max
                     maxEntry = xp
