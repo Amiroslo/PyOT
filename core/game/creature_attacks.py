@@ -295,10 +295,10 @@ class PlayerAttacks(CreatureAttacks):
                             # Allow him to fight back.
                             if self.getSkull(target) == SKULL_NONE:
                                 self.setSkull(SKULL_YELLOW, target, config.loginBlock)
-                        if config.loginBlock:
-                            # PZ block.
-                            self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
-                            self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
+                if config.loginBlock:
+                    # PZ block.
+                    self.condition(Condition(CONDITION_INFIGHT, length=config.loginBlock), CONDITION_REPLACE)
+                    self.condition(Condition(CONDITION_PZBLOCK, length=config.loginBlock), CONDITION_REPLACE)
 
         if self.target:
             self.targetChecker = reactor.callLater(config.meleeAttackSpeed, self.attackTarget)
