@@ -365,7 +365,9 @@ class CreatureMovement(object):
             game.scriptsystem.get('walkOn').runDeferNoReturn(item, self, None, position=position, fromPosition=oldPosition)
             if item.teledest:
                 try:
-                    self.teleport(Position(item.teledest[0], item.teledest[1], item.teledest[2], self.position.instanceId))
+                    tmp = Position(item.teledest[0], item.teledest[1], item.teledest[2])
+                    self.teleport(tmp, self.position.instanceId)
+                    self.magicEffect(EFFECT_TELEPORT)
                 except:
                     log.msg("%d (%s) got a invalid teledist (%s), remove it!" % (item.itemId, item, item.teledest))
                     del item.teledest

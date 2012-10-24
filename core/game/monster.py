@@ -259,10 +259,7 @@ class Monster(Creature):
 
                     if self.base.experience >= self.lastDamagers[0].data["level"]:
                         self.lastDamagers[0].soulGain()
-        
-        # We don't need lastDamagers anymore, probably not the right place to do this
-        self.lastDamagers = None
-        self.lastDamagers = deque(maxlen=config.trackHits)
+       
         # Begin respawn
         if self.respawn:
             self.position = self.spawnPosition
@@ -448,7 +445,9 @@ class MonsterBase(object):
             
             if not monster.clientId() in allCreatures:
                 allCreatures[monster.clientId()] = monster
-
+                
+            monster.lastDamagers.clear()
+            
             if place:
                 # Vertify that there are no spectators if check = True
                 if check and engine.hasSpectators(position): 
