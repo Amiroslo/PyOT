@@ -89,10 +89,24 @@ class LoginProtocol(protocolbase.TibiaProtocol):
         pkg.uint8(0x64)
         pkg.uint8(len(characters))
         for character in characters:
+            ip = config.servers[character['world_id']][0]
+            port = config.gamePort
+            if ':' in ip:
+                ip, port = ip.split(':')
+                port = int(port)
+            if ip != 'auto':
+                ip = socket.gethostbyname(ip)
+            else:
+                if self.transport.getPeer()[0] == '127.0.0.1':
+                    ip = '127.0.0.1'
+                else:
+                    import urllib2
+                    ip = urllib2.urlopen("http://automation.whatismyip.com/n09230945.asp").read()
+                
             pkg.string(character['name'])
             pkg.string(config.servers[character['world_id']][1])
-            pkg.raw(socket.inet_aton(socket.gethostbyname(config.servers[character['world_id']][0])))
-            pkg.uint16(config.gamePort)
+            pkg.raw(socket.inet_aton(ip))
+            pkg.uint16(port)
 
         # Add premium days
         pkg.uint16(account[0]['premdays'])
