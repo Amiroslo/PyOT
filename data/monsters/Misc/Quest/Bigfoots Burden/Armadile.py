@@ -1,4 +1,4 @@
-armadile = game.monster.genMonster("Armadile", (487, 5980), "an armadile") #mostly unkniown including corpse
+armadile = game.monster.genMonster("Armadile", (487, 18378), "an armadile") #mostly unkniown
 armadile.setHealth(3800, healthmax=3800)
 armadile.bloodType(color="blood")
 armadile.setDefense(armor=30, fire=0.98, earth=0, energy=0.98, ice=0.85, holy=0.98, death=0.98, physical=0.98, drown=0.98)

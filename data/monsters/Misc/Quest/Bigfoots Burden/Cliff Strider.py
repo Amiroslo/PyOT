@@ -1,4 +1,4 @@
-cliff_strider = game.monster.genMonster("Cliff Strider", (497, 5980), "a cliff strider")#mostly unkniown including corpse
+cliff_strider = game.monster.genMonster("Cliff Strider", (497, 17420), "a cliff strider")#mostly unkniown including
 cliff_strider.setHealth(9400, healthmax=9400)
 cliff_strider.bloodType(color="blood")
 cliff_strider.setDefense(armor=25, fire=1, earth=0, energy=0, ice=1, holy=1, death=1, physical=1, drown=1)

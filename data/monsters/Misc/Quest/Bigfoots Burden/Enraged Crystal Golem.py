@@ -1,4 +1,4 @@
-enraged_crystal_golem = game.monster.genMonster("Enraged Crystal Golem", (508, 5980), "an enraged crystal golem")  #mostly unkniown including corpse and blood
+enraged_crystal_golem = game.monster.genMonster("Enraged Crystal Golem", (508, 18466), "an enraged crystal golem")  #mostly unkniown including blood
 enraged_crystal_golem.setHealth(700, healthmax=700)
 enraged_crystal_golem.bloodType(color="blood")
 enraged_crystal_golem.setDefense(armor=30, fire=0, earth=1, energy=1, ice=0, holy=1, death=1, physical=0.85, drown=1)
