@@ -829,6 +829,8 @@ def genMonster(name, look, description=""):
         look, corpse = look
     else:
         corpse = idByName('dead %s' % name)
+        if not corpse:
+            corpse = idByName('slain %s' % name)
     baseMonster = MonsterBase({"lookhead":0, "lookfeet":0, "lookbody":0, "looklegs":0, "lookaddons":0, "looktype":look, "corpse":corpse, "name":name, "description":description or "a %s." % name}, brain)
     """try:
         baseMonster.regCorpseAction(look[2])
