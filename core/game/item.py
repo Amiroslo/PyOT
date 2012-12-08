@@ -153,6 +153,8 @@ class Item(object):
         return pos            
         
     def actionIds(self):
+        if not self.itemId: return []
+
         return self.actions or ['item']
     
     def hasAction(self, name):
