@@ -6,7 +6,6 @@ SPIDER_WEB = {7538, 7539}
 def onUseWith(onThing, onPosition, **k):
     if onThing.itemId in JUNGLE_GRASS_REMOVE:
         onThing.transform(0)
-        onThing.decay()
     elif onThing.itemId in JUNGLE_GRASS_TRANSFORM:
         onThing.transform(onThing.itemId - 1)
         onThing.decay()

@@ -39,7 +39,7 @@ SKINS = {
 8961: [ [ 5000, 7487 ], [ 10000, 7737 ], [ 20000, 6492 ], [ 30000, 8860 ], [ 45000, 2683 ], [ 60000, 2096 ], [ 90000, 9005, 50 ] ]
 }
 
-@register("useWith", (5908))
+@register("useWith", 5908)
 def useWith(creature, thing, onThing, onPosition, **k):
     skin = SKINS[onThing.itemId]
     if (skin == None) or (onThing.itemId not in ITEMS):

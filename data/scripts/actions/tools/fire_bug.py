@@ -1,16 +1,22 @@
-thingId = 5466
-fireBugs = 5468
-#need to be able to burn spider webs and light empty coal basins
+#need to be able to light empty coal basins
+#need too add hit effects when using it on the proper items
 
-@register('useWith', thingId)
-def onUse(creature, position, onThing, onPosition, **k):
+@register('useWith', 5468)
+def useWith(creature, thing, onThing, onPosition, **k):
     if onThing.itemId == 5466: # Sugar cane
-        if(random.randint(0,20) == 0):
-            creature.modifyHealth(-5)
-            magicEffect(position, EFFECT_EXPLOSIONAREA)
-            creature.removeItem(position)
-
+        validItem = True
         onThing.transform(5465)
+    elif onThing.itemId == 7538:
+        validItem = True
+        onThing.transform(7544)
+    elif onThing.itemId == 7543: # Spider Webs
+        validItem = True
+        onThing.transform(7545)
+
+    if validItem == True and random.randint(0,20) == 0:
+        creature.modifyHealth(-5)
+        magicEffect(position, EFFECT_EXPLOSIONAREA)
+        creature.removeItem(position)
 
     else:
         return False
