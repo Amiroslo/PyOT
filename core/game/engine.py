@@ -1111,7 +1111,7 @@ def _allowProjectileVerify(position, blockWindow = False):
 
     return True
 
-def allowProjectile(posisition, position2, blockWindow = False):
+def allowProjectile(position, position2, blockWindow = False):
     """ Can a projectile from positiongo to position2? Also used for item tossing. """
 
     xSteps = abs(position.x - position2.x)
