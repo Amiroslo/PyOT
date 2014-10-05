@@ -1,7 +1,7 @@
 In order to run PyOT you need:
 ================================
 
-* Python 2.7+ or Pypy 1.7+ (2.2+ are HIGHLY recommended)
+* Python 2.7+ or Pypy 1.7+ (2.4+ are HIGHLY recommended (huge gc improvements))
 
 * Twisted 10+ 
 
@@ -16,19 +16,17 @@ In order to run PyOT you need:
 Links for Windows:
 ------------------
 
-http://www.python.org/ftp/python/2.7.3/python-2.7.3.msi
+http://www.python.org/ftp/python/2.7.8/python-2.7.8.msi
 
-Grab MySQL-python-1.2.4c1.win32.py2.7.exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python
+Grab MySQL-python-1.2.5.win32.py2.7.exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#mysql-python
 
-http://pypi.python.org/packages/2.7/T/Twisted/Twisted-12.3.0.win32-py2.7.msi
+http://pypi.python.org/packages/2.7/T/Twisted/Twisted-14.0.2.win32-py2.7.msi
 
-http://sourceforge.net/projects/pywin32/files/pywin32/Build%20218/pywin32-218.win32-py2.7.exe/download
+http://sourceforge.net/projects/pywin32/files/pywin32/Build%20218/pywin32-219.win32-py2.7.exe/download
 
-Grab zope.interface-4.0.2.win32-py2.7.‌exe http://www.lfd.uci.edu/~gohlke/pythonlibs/#zope.interface 
+https://pypi.python.org/packages/2.7/z/zope.interface/zope.interface-4.1.1.win32-py2.7.exe#md5=8b36e1fcd506ac9fb325ddf1c7238b07
 
-and last
-
-Base-13.X.YY.win32-py2.7.exe (X = a month and YY = a day, this package gets updated all the time!) http://www.lfd.uci.edu/~gohlke/pythonlibs/#base
+Base have been removed, so you might have to drab a few things (like cjson) from the link below.
 
 note: http://www.lfd.uci.edu/~gohlke/pythonlibs/ (This site also got 64bit editions of all the libs)
 
@@ -37,6 +35,11 @@ Installation
 ============
 
 Copy "config.py.dist" to "config.py" and edit it to match your database settings.
+
+Support / Discussions / JOIN the dev team
+============
+Visit http://vapus.net,
+http://vapus.net/forum/viewforum.php?f=287
 
 Archlinux:
 ----------
