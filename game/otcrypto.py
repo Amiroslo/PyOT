@@ -48,7 +48,7 @@ def bytes( long_int ):
 def decryptRSA(stream):
     return bytes(pow(int.from_bytes(stream, 'big'), D, N))
 
-if ffi and False:
+if ffi:
     def decryptXTEA(stream, k):
         length = len(stream) >> 2
         bstr = "<%dL" % length
