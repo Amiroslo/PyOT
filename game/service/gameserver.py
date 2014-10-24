@@ -54,8 +54,9 @@ class GameProtocol(protocolbase.TibiaProtocol):
             IN_TEST = True
 
         if packetType == 0x0A and not self.ready:
-            packet.pos += 2 # OS 0x00 and 0x01
-            #packet.uint16()
+            #linux = 0x01 windows = 0x02 flash = 0x03 
+            #otc_linux = 0x0A otc_windows = 0x0B otc_mac = 0x0C
+            self.OSType = packet.uint16() # os type
             version = packet.uint16() # Version int
 
             if version >= 972:
